@@ -1,0 +1,296 @@
+/* ==========================================================================
+   Lovely Homework! - Custom Video Player Stylesheet
+   Subtitles Styling, -10s / +10s Double Tap Interactive Ripples, Control Bar
+   ========================================================================== */
+
+.player-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.94);
+  backdrop-filter: blur(8px);
+  z-index: 2500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.25s ease;
+}
+
+.player-wrapper {
+  width: 100%;
+  max-width: 1050px;
+  background: #0B0F19;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Player Top Bar */
+.player-top-bar {
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 100%);
+  color: #FFFFFF;
+}
+
+.player-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.player-meta h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.player-category-pill {
+  background: var(--primary-red);
+  color: #FFFFFF;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.5px;
+}
+
+.player-close-btn {
+  background: none;
+  border: none;
+  color: #FFFFFF;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.player-close-btn:hover {
+  transform: scale(1.15);
+  color: var(--primary-red);
+}
+
+/* Video Stage */
+.video-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000000;
+  overflow: hidden;
+  user-select: none;
+}
+
+.video-stage video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Native WebVTT Subtitle Cue Styling */
+::cue {
+  background-color: rgba(0, 0, 0, 0.82) !important;
+  color: #FFFFFF !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-size: 1.35rem !important;
+  line-height: 1.4 !important;
+  font-weight: 600 !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9) !important;
+  border-radius: 6px !important;
+  padding: 4px 10px !important;
+}
+
+/* ==========================================================================
+   Double Tap Interactive Zones: Left (-10s) and Right (+10s)
+   ========================================================================== */
+
+.tap-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40%;
+  z-index: 10;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+.tap-left {
+  left: 0;
+}
+
+.tap-right {
+  right: 0;
+}
+
+.tap-ripple {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(229, 57, 53, 0.35);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.6);
+  transition: none;
+}
+
+.tap-left .tap-ripple {
+  left: 20%;
+}
+
+.tap-right .tap-ripple {
+  right: 20%;
+}
+
+.ripple-icon {
+  font-size: 2rem;
+  color: #FFFFFF;
+}
+
+.ripple-text {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-top: 2px;
+}
+
+/* Ripple Animation when double tapped */
+.tap-ripple.animate {
+  animation: doubleTapWave 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes doubleTapWave {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+}
+
+/* Player Controls Bar */
+.player-controls {
+  background: #111827;
+  padding: 0.75rem 1.25rem 1rem;
+  color: #FFFFFF;
+}
+
+/* Progress Scrubber */
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-full);
+  position: relative;
+  cursor: pointer;
+  margin-bottom: 0.75rem;
+  transition: height 0.15s ease;
+}
+
+.progress-bar-container:hover {
+  height: 12px;
+}
+
+.progress-filled {
+  height: 100%;
+  background: var(--primary-red);
+  border-radius: var(--radius-full);
+  width: 0%;
+  position: relative;
+  transition: width 0.1s linear;
+}
+
+.progress-filled::after {
+  content: "";
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+}
+
+.controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.controls-left, .controls-right {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.ctrl-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Subtitles Toggle Button */
+.subtitle-toggle-btn.active {
+  background: var(--primary-red);
+  border-color: var(--accent-red);
+  box-shadow: 0 0 10px rgba(229, 57, 53, 0.6);
+}
+
+.subtitle-toggle-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.time-display {
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  color: #D1D5DB;
+  margin-left: 0.5rem;
+}
+
+.player-hint-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.65rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.75rem;
+  color: #9CA3AF;
+}
