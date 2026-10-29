@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Lovely Homework!</title>
+
+  <!-- PWA & Mobile Web App Meta -->
+  <meta name="description" content="Check homework photos, video lessons, and watch fun movies with subtitles for teachers and students" />
+  <meta name="theme-color" content="#D32F2F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Lovely Homework!" />
+
+  <!-- Icons & Manifest -->
+  <link rel="icon" type="image/svg+xml" href="./assets/icons/icon.svg" />
+  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png" />
+  <link rel="manifest" href="./manifest.json" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="./css/main.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/player.css" />
+  <link rel="stylesheet" href="./css/responsive.css" />
+</head>
+<body>
+
+  <!-- =======================================================================
+       1. Landing / Role Selection View: "Are you . . . ?"
+       ======================================================================= -->
+  <div id="landing-view" class="landing-overlay">
+    <div id="landing-container">
+      <!-- Injected by js/app.js -->
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       2. Main App Shell (Shown when user is logged in)
+       ======================================================================= -->
+  <div id="app-shell" class="hidden">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-container">
+        <!-- Logo / Title -->
+        <div class="header-brand" onclick="window.appRouter.navigate('homework')">
+          <span class="header-logo-icon">📚❤️</span>
+          <div class="header-title-wrap">
+            <h1>Lovely Homework!</h1>
+            <span class="header-subtitle" data-i18n="appSubtitle">Learn, Practice, Excel together</span>
+          </div>
+        </div>
+
+        <!-- Right Side: Role Badge, Language, Theme, and Notifications Bell -->
+        <div class="header-right">
+          <!-- Active User Role Badge -->
+          <span id="user-role-badge" class="badge badge-teacher">Teacher</span>
+
+          <!-- Language Selector -->
+          <div class="lang-selector-header">
+            <select id="header-lang-select" class="form-control-sm" title="Change Language">
+              <option value="en">EN</option>
+              <option value="az">AZ</option>
+              <option value="ru">RU</option>
+              <option value="tr">TR</option>
+            </select>
+          </div>
+
+          <!-- Night Mode / Light Mode Toggle -->
+          <button id="theme-toggle-btn" class="btn btn-circle" title="Toggle Night Mode">
+            🌙
+          </button>
+
+          <!-- Top-Right Notifications Bell -->
+          <div class="notif-wrapper">
+            <button id="notif-btn" class="notif-btn" title="Notifications">
+              🔔
+              <span id="notif-badge" class="notif-badge hidden">0</span>
+            </button>
+            <!-- Dropdown Menu -->
+            <div id="notif-dropdown" class="notif-dropdown hidden"></div>
+          </div>
+
+          <!-- User Profile & Sign Out -->
+          <div class="user-profile-chip">
+            <span id="user-avatar-display" class="user-avatar-small">👨‍🏫</span>
+            <span id="user-name-display" class="user-name-display font-bold">Mr. Aliyev</span>
+            <button id="sign-out-btn" class="btn btn-link text-xs text-red" title="Sign Out">✕</button>
+          </div>
+
+          <!-- Backup / Data Settings -->
+          <button id="backup-data-btn" class="btn btn-circle" title="Backup & Restore Data">
+            💾
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navigation Bar / Tabs -->
+    <nav class="app-nav-bar">
+      <div class="nav-container">
+        <a href="#homework" class="app-nav-item active" data-tab="homework">
+          <span>📝</span>
+          <span data-i18n="tabHomework">Homework</span>
+        </a>
+        <a href="#materials" class="app-nav-item" data-tab="materials">
+          <span>📚</span>
+          <span data-i18n="tabMaterials">Materials / Video Lessons</span>
+        </a>
+        <a href="#funtime" class="app-nav-item" data-tab="funtime">
+          <span>🍿</span>
+          <span data-i18n="tabFunTime">Fun Time</span>
+        </a>
+        <a href="#students" class="app-nav-item hidden" id="nav-tab-students" data-tab="students">
+          <span>👥</span>
+          <span data-i18n="tabStudents">Students & Groups</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Main View Content Container -->
+    <main class="main-view-container">
+      <div id="main-content-view">
+        <!-- Rendered dynamically by active module -->
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="./js/db.js"></script>
+  <script src="./js/i18n.js"></script>
+  <script src="./js/seed-data.js"></script>
+  <script src="./js/auth.js"></script>
+  <script src="./js/notifications.js"></script>
+  <script src="./js/homework.js"></script>
+  <script src="./js/materials.js"></script>
+  <script src="./js/funtime.js"></script>
+  <script src="./js/students.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
