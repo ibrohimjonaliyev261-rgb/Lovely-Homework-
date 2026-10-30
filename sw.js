@@ -1,25 +1,26 @@
 // Service Worker for Lovely Homework! PWA
-const CACHE_NAME = 'lovely-homework-v1.0.0';
+const CACHE_NAME = 'lovely-homework-v1.1.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
-  './css/main.css',
-  './css/components.css',
-  './css/player.css',
-  './css/responsive.css',
-  './js/app.js',
-  './js/db.js',
-  './js/auth.js',
-  './js/i18n.js',
-  './js/homework.js',
-  './js/materials.js',
-  './js/funtime.js',
-  './js/notifications.js',
-  './js/seed-data.js',
-  './assets/icons/icon.svg',
-  './assets/icons/icon-192.png',
-  './assets/icons/icon-512.png'
+  './main.css',
+  './components.css',
+  './player.css',
+  './responsive.css',
+  './app.js',
+  './db.js',
+  './auth.js',
+  './i18n.js',
+  './homework.js',
+  './materials.js',
+  './funtime.js',
+  './students.js',
+  './notifications.js',
+  './seed-data.js',
+  './icon.svg',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -45,7 +46,6 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests and http/https schemes
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
   if (!url.protocol.startsWith('http')) return;
@@ -53,20 +53,18 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Fetch in background to revalidate cache
         fetch(event.request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(event.request, networkResponse);
             });
           }
-        }).catch(() => {/* ignore offline error */});
+        }).catch(() => {});
         return cachedResponse;
       }
       return fetch(event.request).then((networkResponse) => {
         return networkResponse;
       }).catch(() => {
-        // Offline fallback if html
         if (event.request.headers.get('accept')?.includes('text/html')) {
           return caches.match('./index.html');
         }

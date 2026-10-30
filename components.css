@@ -727,6 +727,48 @@
   background: var(--bg-subtle);
 }
 
+.notif-pending-banner {
+  background: #FFFBEB;
+  border-bottom: 2px solid #F59E0B;
+  padding: 0.75rem 1rem;
+}
+
+[data-theme="night"] .notif-pending-banner {
+  background: rgba(245, 158, 11, 0.15);
+}
+
+.notif-banner-head {
+  font-size: 0.825rem;
+  color: #B45309;
+  margin-bottom: 0.4rem;
+}
+
+[data-theme="night"] .notif-banner-head {
+  color: #FBBF24;
+}
+
+.notif-quick-student {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.825rem;
+  padding: 0.35rem 0;
+  border-top: 1px dashed rgba(245, 158, 11, 0.4);
+}
+
+.pulse-anim {
+  animation: bellRing 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes bellRing {
+  0% { transform: scale(1) rotate(0); }
+  25% { transform: scale(1.15) rotate(-15deg); }
+  50% { transform: scale(1.15) rotate(15deg); }
+  75% { transform: scale(1.15) rotate(-10deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
 .notif-list {
   max-height: 380px;
   overflow-y: auto;

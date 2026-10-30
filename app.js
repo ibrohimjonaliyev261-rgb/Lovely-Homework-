@@ -185,13 +185,12 @@ class App {
 
             <div class="form-group">
               <label>${window.i18n.get('emailLabel')}</label>
-              <input type="text" id="teacher-name-input" class="form-control" value="Mr. Aliyev" placeholder="e.g. Mr. Aliyev or email" required/>
+              <input type="text" id="teacher-name-input" class="form-control" placeholder="e.g. Teacher name or email" required/>
             </div>
 
             <div class="form-group">
               <label>${window.i18n.get('enterPassword')} *</label>
-              <input type="password" id="teacher-pass-input" class="form-control" placeholder="Aliyev" autofocus required/>
-              <span class="text-xs text-gray mt-1 block">Teacher Code: <strong>Aliyev</strong></span>
+              <input type="password" id="teacher-pass-input" class="form-control" placeholder="••••••••" autofocus required/>
             </div>
 
             <div id="teacher-login-error" class="error-msg hidden"></div>
@@ -260,6 +259,11 @@ class App {
             </div>
 
             <div class="form-group">
+              <label>Student Email Address *</label>
+              <input type="email" id="reg-email-input" class="form-control" required placeholder="e.g. student@gmail.com"/>
+            </div>
+
+            <div class="form-group">
               <label>${window.i18n.get('selectLevel')} *</label>
               <select id="reg-level-select" class="form-control" required>
                 ${levels.map(lvl => `<option value="${lvl}">${lvl}</option>`).join('')}
@@ -293,6 +297,7 @@ class App {
       e.preventDefault();
       const firstName = modal.querySelector('#reg-firstname-input').value.trim();
       const lastName = modal.querySelector('#reg-lastname-input').value.trim();
+      const email = modal.querySelector('#reg-email-input').value.trim();
       const level = modal.querySelector('#reg-level-select').value;
       const teacherId = modal.querySelector('#reg-teacher-select').value;
 
@@ -300,6 +305,7 @@ class App {
         const student = await window.authManager.registerStudent({
           firstName,
           lastName,
+          email,
           level,
           teacherId
         });
@@ -485,14 +491,35 @@ class App {
       }
     });
 
-    if (tabName === 'homework') {
-      window.homeworkModule.init(contentContainer);
-    } else if (tabName === 'materials') {
-      window.materialsModule.init(contentContainer);
-    } else if (tabName === 'funtime') {
-      window.funTimeModule.init(contentContainer);
-    } else if (tabName === 'students') {
-      window.studentsModule.init(contentContainer);
+    // Clean container before mounting module to prevent overlapping views
+    contentContainer.innerHTML = '';
+
+    try {
+      if (tabName === 'homework') {
+        if (window.homeworkModule) {
+          window.homeworkModule.init(contentContainer);
+        }
+      } else if (tabName === 'materials') {
+        if (window.materialsModule) {
+          window.materialsModule.init(contentContainer);
+        }
+      } else if (tabName === 'funtime') {
+        if (window.funTimeModule) {
+          window.funTimeModule.init(contentContainer);
+        }
+      } else if (tabName === 'students') {
+        if (window.studentsModule) {
+          window.studentsModule.init(contentContainer);
+        } else {
+          console.warn('studentsModule not yet ready, retrying...');
+          setTimeout(() => {
+            if (window.studentsModule) window.studentsModule.init(contentContainer);
+          }, 100);
+        }
+      }
+    } catch (err) {
+      console.error(`Error navigating to ${tabName}:`, err);
+      contentContainer.innerHTML = `<div class="empty-state"><h3>⚠️ Section error</h3><p>${err.message}</p></div>`;
     }
   }
 
@@ -505,6 +532,18 @@ class App {
         if (tab) this.navigate(tab);
       });
     });
+
+    // Logo brand click
+    const brandBtn = document.getElementById('brand-home-btn');
+    if (brandBtn) {
+      brandBtn.addEventListener('click', () => this.navigate('homework'));
+    }
+
+    // Cloud Sync button
+    const cloudBtn = document.getElementById('cloud-sync-btn');
+    if (cloudBtn) {
+      cloudBtn.addEventListener('click', () => this.showCloudSyncModal());
+    }
 
     // Theme toggle button
     const themeBtn = document.getElementById('theme-toggle-btn');
@@ -545,6 +584,119 @@ class App {
         this.renderLandingScreen();
       }
     });
+  }
+
+  // Cloud Sync & Real-time Sharing Modal
+  showCloudSyncModal() {
+    const modalId = 'cloud-sync-modal';
+    let modal = document.getElementById(modalId);
+    if (modal) modal.remove();
+
+    const isTeacher = window.authManager?.currentUser?.role === 'teacher';
+
+    const html = `
+      <div id="${modalId}" class="modal-overlay">
+        <div class="modal-content modal-md">
+          <div class="modal-header">
+            <h3>☁️ Real-time Cloud Sync & Multi-Device Setup</h3>
+            <button class="modal-close-btn">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="sync-status-card" style="background:var(--primary-red-light); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--primary-red-border); margin-bottom:1.25rem;">
+              <h4 class="font-bold text-red" style="margin-bottom:0.35rem;">📡 Live Multi-Tab & Device Sync Active</h4>
+              <p class="text-sm">
+                Open another tab or window on this computer to test student registration in real-time — notifications and pending requests pop up automatically without refreshing!
+              </p>
+            </div>
+
+            <h4 class="font-bold mb-2">🌐 How Cross-Device Cloud Sync Works on GitHub Pages:</h4>
+            <p class="text-sm text-gray mb-3">
+              Because GitHub Pages is a static host, when students register on their own phones or computers, their data connects via free Google Firebase Firestore so teachers and students worldwide share the same live classroom.
+            </p>
+
+            ${isTeacher ? `
+              <div class="test-sync-box" style="background:var(--bg-subtle); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-color); margin-bottom:1rem;">
+                <label class="font-bold block mb-1">🧪 Test Instant Notification Alert:</label>
+                <p class="text-xs text-gray mb-2">Click below to simulate an instant incoming student registration request right now:</p>
+                <button type="button" id="trigger-test-notif-btn" class="btn btn-sm btn-primary">
+                  🔔 Simulate Student Registration Notification
+                </button>
+              </div>
+            ` : ''}
+
+            <div class="pwa-share-box">
+              <label class="font-bold block mb-1">📲 Share App Link with Students & Teachers:</label>
+              <div style="display:flex; gap:0.5rem;">
+                <input type="text" id="share-link-input" class="form-control" readonly value="${window.location.href}"/>
+                <button type="button" id="copy-share-link-btn" class="btn btn-outline-primary">
+                  📋 Copy
+                </button>
+              </div>
+              <p class="text-xs text-gray mt-1">Students can open this link on iPhone or Android and tap "Add to Home Screen" to install it as an app!</p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary modal-close-btn">${window.i18n.get('close')}</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', html);
+    modal = document.getElementById(modalId);
+
+    const copyBtn = modal.querySelector('#copy-share-link-btn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        const input = modal.querySelector('#share-link-input');
+        input.select();
+        navigator.clipboard.writeText(input.value);
+        window.showToast('App link copied to clipboard! 📋');
+      });
+    }
+
+    const testBtn = modal.querySelector('#trigger-test-notif-btn');
+    if (testBtn) {
+      testBtn.addEventListener('click', async () => {
+        const studentName = 'Test Student ' + Math.floor(Math.random() * 100);
+        const testUser = {
+          id: 'test_student_' + Date.now(),
+          role: 'student',
+          firstName: studentName,
+          lastName: '(Online)',
+          email: 'test@student.com',
+          password: '123',
+          level: 'Elementary',
+          teacherId: window.authManager.currentUser.id,
+          status: 'pending',
+          avatar: '🧑‍🎓',
+          createdAt: new Date().toISOString()
+        };
+        await window.appDB.put('users', testUser);
+
+        const notif = {
+          id: 'notif_test_' + Date.now(),
+          recipientId: window.authManager.currentUser.id,
+          title: 'New Student Registration Pending 🔔',
+          message: `${studentName} requested to join Elementary level.`,
+          type: 'registration',
+          targetLevel: 'Elementary',
+          targetItemId: testUser.id,
+          isRead: false,
+          createdAt: new Date().toISOString()
+        };
+        await window.appDB.put('notifications', notif);
+
+        window.notifManager.broadcastChange('student_registration', { student: testUser, notif });
+        window.notifManager.update();
+        window.showToast(`🔔 Received real-time registration request from ${studentName}!`);
+        if (window.studentsModule && window.app.currentTab === 'students') {
+          window.studentsModule.render();
+        }
+      });
+    }
+
+    modal.querySelectorAll('.modal-close-btn').forEach(b => b.addEventListener('click', () => modal.remove()));
   }
 
   // Backup / Export & Restore Modal

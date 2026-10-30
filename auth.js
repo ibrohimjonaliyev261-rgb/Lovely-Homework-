@@ -80,18 +80,19 @@ class AuthManager {
   }
 
   // Student registration with pending status
-  async registerStudent({ firstName, lastName, level, teacherId, password }) {
+  async registerStudent({ firstName, lastName, email, level, teacherId, password }) {
     if (!firstName || !lastName || !level) {
       throw new Error('Please fill all required fields');
     }
 
     const id = 'student_' + Date.now();
+    const cleanEmail = email ? email.trim().toLowerCase() : `${firstName.trim().toLowerCase()}_${Date.now().toString().slice(-4)}@student.com`;
     const studentUser = {
       id,
       role: 'student',
       firstName: firstName.trim(),
       lastName: lastName.trim(),
-      email: `${firstName.trim().toLowerCase()}_${Date.now().toString().slice(-4)}`,
+      email: cleanEmail,
       password: password || '123456',
       level,
       teacherId: teacherId || 'teacher_aliyev',
@@ -102,12 +103,12 @@ class AuthManager {
 
     await window.appDB.put('users', studentUser);
 
-    // Notify the teacher!
+    // Notify the teacher! (Both to specific teacher ID and generic 'teacher')
     const notif = {
       id: 'notif_reg_' + Date.now(),
-      recipientId: studentUser.teacherId,
+      recipientId: studentUser.teacherId || 'teacher',
       title: 'New Student Registration Pending 🔔',
-      message: `${studentUser.firstName} ${studentUser.lastName} requested to join ${studentUser.level} level.`,
+      message: `${studentUser.firstName} ${studentUser.lastName} (${studentUser.email}) requested to join ${studentUser.level} level.`,
       type: 'registration',
       targetLevel: studentUser.level,
       targetItemId: studentUser.id,
@@ -115,6 +116,12 @@ class AuthManager {
       createdAt: new Date().toISOString()
     };
     await window.appDB.put('notifications', notif);
+
+    // Broadcast change to other tabs & refresh notifications immediately
+    if (window.notifManager) {
+      window.notifManager.broadcastChange('student_registration', { student: studentUser, notif });
+      window.notifManager.update();
+    }
 
     return studentUser;
   }
@@ -172,7 +179,7 @@ class AuthManager {
       id: 'notif_approved_' + Date.now(),
       recipientId: student.id,
       title: 'Registration Approved! 🎉',
-      message: `Your teacher ${this.currentUser?.firstName || 'Aliyev'} has accepted your request for ${student.level} level. Welcome!`,
+      message: `Your teacher ${this.currentUser?.firstName || 'Teacher'} has accepted your request for ${student.level} level. Welcome!`,
       type: 'registration',
       targetLevel: student.level,
       targetItemId: student.id,
@@ -180,6 +187,11 @@ class AuthManager {
       createdAt: new Date().toISOString()
     };
     await window.appDB.put('notifications', notif);
+
+    if (window.notifManager) {
+      window.notifManager.broadcastChange('student_approved', { studentId });
+      window.notifManager.update();
+    }
   }
 
   // Reject student request (Teacher action)
@@ -189,6 +201,11 @@ class AuthManager {
 
     student.status = 'rejected';
     await window.appDB.put('users', student);
+
+    if (window.notifManager) {
+      window.notifManager.broadcastChange('student_rejected', { studentId });
+      window.notifManager.update();
+    }
   }
 
   // Promote / Graduate student group (Teacher action)

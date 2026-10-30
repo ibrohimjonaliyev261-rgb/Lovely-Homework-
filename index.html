@@ -12,12 +12,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Lovely Homework!" />
 
-  <!-- Icons & Manifest -->
-  <link rel="icon" type="image/svg+xml" href="./assets/icons/icon.svg" />
-  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png" />
+  <!-- Icons & Manifest (Root paths for GitHub flat structure) -->
+  <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
   <link rel="manifest" href="./manifest.json" />
 
-  <!-- Stylesheets -->
+  <!-- Stylesheets (Directly in root) -->
   <link rel="stylesheet" href="./main.css" />
   <link rel="stylesheet" href="./components.css" />
   <link rel="stylesheet" href="./player.css" />
@@ -30,7 +30,7 @@
        ======================================================================= -->
   <div id="landing-view" class="landing-overlay">
     <div id="landing-container">
-      <!-- Injected by js/app.js -->
+      <!-- Injected by app.js -->
     </div>
   </div>
 
@@ -42,7 +42,7 @@
     <header class="app-header">
       <div class="header-container">
         <!-- Logo / Title -->
-        <div class="header-brand" onclick="window.appRouter.navigate('homework')">
+        <div class="header-brand" id="brand-home-btn">
           <span class="header-logo-icon">📚❤️</span>
           <div class="header-title-wrap">
             <h1>Lovely Homework!</h1>
@@ -50,10 +50,15 @@
           </div>
         </div>
 
-        <!-- Right Side: Role Badge, Language, Theme, and Notifications Bell -->
+        <!-- Right Side: Role Badge, Cloud Sync, Language, Theme, and Notifications Bell -->
         <div class="header-right">
           <!-- Active User Role Badge -->
           <span id="user-role-badge" class="badge badge-teacher">Teacher</span>
+
+          <!-- Cloud Sync Button -->
+          <button id="cloud-sync-btn" class="btn btn-circle" title="Cloud Sync / Real-time multi-device sharing">
+            ☁️
+          </button>
 
           <!-- Language Selector -->
           <div class="lang-selector-header">
@@ -83,7 +88,7 @@
           <!-- User Profile & Sign Out -->
           <div class="user-profile-chip">
             <span id="user-avatar-display" class="user-avatar-small">👨‍🏫</span>
-            <span id="user-name-display" class="user-name-display font-bold">Mr. Aliyev</span>
+            <span id="user-name-display" class="user-name-display font-bold">Teacher</span>
             <button id="sign-out-btn" class="btn btn-link text-xs text-red" title="Sign Out">✕</button>
           </div>
 
@@ -95,25 +100,26 @@
       </div>
     </header>
 
-    <!-- Navigation Bar / Tabs -->
+    <!-- Navigation Bar / Tabs (Using button elements to prevent hash jumps) -->
     <nav class="app-nav-bar">
       <div class="nav-container">
-        <a href="#homework" class="app-nav-item active" data-tab="homework">
+        <button type="button" class="app-nav-item active" id="nav-tab-homework" data-tab="homework">
           <span>📝</span>
           <span data-i18n="tabHomework">Homework</span>
-        </a>
-        <a href="#materials" class="app-nav-item" data-tab="materials">
+        </button>
+        <button type="button" class="app-nav-item" id="nav-tab-materials" data-tab="materials">
           <span>📚</span>
           <span data-i18n="tabMaterials">Materials / Video Lessons</span>
-        </a>
-        <a href="#funtime" class="app-nav-item" data-tab="funtime">
+        </button>
+        <button type="button" class="app-nav-item" id="nav-tab-funtime" data-tab="funtime">
           <span>🍿</span>
           <span data-i18n="tabFunTime">Fun Time</span>
-        </a>
-        <a href="#students" class="app-nav-item hidden" id="nav-tab-students" data-tab="students">
+        </button>
+        <button type="button" class="app-nav-item hidden" id="nav-tab-students" data-tab="students">
           <span>👥</span>
           <span data-i18n="tabStudents">Students & Groups</span>
-        </a>
+          <span id="nav-pending-badge" class="badge badge-warning hidden" style="font-size: 0.72rem; padding: 2px 7px; margin-left: 4px;">0</span>
+        </button>
       </div>
     </nav>
 
@@ -128,7 +134,7 @@
   <!-- Toast Notification Container -->
   <div id="toast-container" class="toast-container"></div>
 
- <!-- Scripts -->
+  <!-- Scripts (Directly in root for GitHub Pages flat structure) -->
   <script src="./db.js"></script>
   <script src="./i18n.js"></script>
   <script src="./seed-data.js"></script>

@@ -10,12 +10,12 @@ Concentrated on a clean **Red and White** aesthetic with full **Night Mode** and
 
 ### 1. 👥 Two Roles: Teacher & Student
 - **Role Selection on Welcome**: Asks *"Are you . . . ?"* with choices for **Teacher** and **Student**.
-- **Teacher Master Access**: Protected by the master password: **`Aliyev`**. Multiple teachers can register and manage their own groups!
-- **Student Registration & Confirmation Flow**:
-  - Student enters First Name, Last Name, Level (*Beginner, Elementary, Pre-intermediate, Intermediate, IELTS Novice, IELTS Standard*), and selects their teacher.
+- **Teacher Master Access**: Protected by the secret master password: **`Aliyev`** (kept confidential with zero hints in the student registration UI). Multiple teachers can register and manage their own groups!
+- **Student Registration & Real-Time Confirmation Flow**:
+  - Student enters First Name, Last Name, **Email Address**, Level (*Beginner, Elementary, Pre-intermediate, Intermediate, IELTS Novice, IELTS Standard*), and selects their teacher.
   - Taps **'Ready'**.
   - Sees message: *"Please wait until your teacher confirms your request."*
-  - The teacher receives a real-time notification with **Accept** and **Reject** buttons. Once accepted, the student is good to go!
+  - The teacher receives an immediate notification alert (via top bell icon and **Students & Groups** tab badge) with **Accept** and **Reject** buttons. Once accepted, the student is good to go!
 
 ### 2. 🎓 6 Levels & Automatic Group Graduation
 - **Levels**:
@@ -56,10 +56,11 @@ Concentrated on a clean **Red and White** aesthetic with full **Night Mode** and
     - Double-tap right side of the screen ➔ **Fast-forwards 10 seconds (+10s)** with visual ripple!
   - Keyboard shortcuts: `Space` (Play/Pause), `Left/Right Arrow` (10s seek), `C` (Subtitles toggle), `F` (Fullscreen).
 
-### 6. 🔔 Top-Right Notifications System
+### 6. 🔔 Real-Time Notifications & Multi-Tab Synchronization
 - Positioned in the top right corner of the header with an active unread badge.
-- Alerts students when new homework, materials, or movies are uploaded.
-- Alerts teachers when students submit homework or request registration.
+- Automatically notifies students when new homework, materials, or movies are uploaded.
+- Automatically notifies teachers via live sound/visual alert when students register or submit work.
+- Includes inter-tab **`BroadcastChannel`** and automated 2.5-second background polling so open teacher tabs update immediately without requiring manual page refresh!
 
 ### 7. 🎨 Theming & Internationalization
 - **Red & White Palette**: Vibrant crimson red (`#D32F2F`), warm rose backgrounds, and crisp white cards.
@@ -68,81 +69,77 @@ Concentrated on a clean **Red and White** aesthetic with full **Night Mode** and
 
 ---
 
-## 🚀 How to Host on GitHub & GitHub Pages (Free 2-Minute Setup)
+## 📁 Repository Structure (Flat Root Layout)
 
-You can publish this app on GitHub and host it live for free with **GitHub Pages**:
+All files are organized directly in the root directory so they deploy seamlessly to GitHub Pages with zero folder mapping issues:
 
-### Option A: Using GitHub Website (No Command Line Needed)
-1. Go to [github.com](https://github.com) and log into your account.
-2. Click the green **"New"** repository button.
-3. Repository name: `lovely-homework` (or any name you like).
-4. Set visibility to **Public**, and click **Create repository**.
-5. Click **"uploading an existing file"**.
-6. Drag and drop all the files and folders from this project (`index.html`, `manifest.json`, `sw.js`, `css/`, `js/`, `assets/`, `README.md`) into GitHub.
-7. Click **Commit changes**.
-8. In your GitHub repository, click on **Settings** (top menu) ➔ **Pages** (left sidebar).
-9. Under **Build and deployment**:
-   - Source: **Deploy from a branch**
-   - Branch: **main** (or `master`), Folder: **/ (root)**
-   - Click **Save**.
-10. In about 30 seconds, your site will be live at:
-    `https://<your-username>.github.io/lovely-homework/`
-
-### Option B: Using Git CLI
-```bash
-git init
-git add .
-git commit -m "Initial commit of Lovely Homework! PWA"
-git branch -M main
-git remote add origin https://github.com/<your-username>/lovely-homework.git
-git push -u origin main
 ```
-Then enable GitHub Pages under **Settings ➔ Pages ➔ Source: main branch**.
+index.html         # Main app shell & router
+main.css           # Core theme (Red & White, Night mode, header)
+components.css     # Buttons, modals, cards, badges, lightboxes
+player.css         # Custom cinema player & -10s/+10s gesture animations
+responsive.css     # Mobile & tablet responsiveness
+app.js             # Main bootstrap, navigation & routing
+auth.js            # Roles, secret password verification, student approvals
+db.js              # IndexedDB high-capacity local database
+homework.js        # Written photo uploads, oral ready/not ready status
+materials.js       # Video lessons & study documents per level
+funtime.js         # Movies, cartoons, TV series with subtitles
+students.js        # Student list, pending request approvals, graduation
+notifications.js   # Real-time notification & multi-tab sync system
+seed-data.js       # Pre-loaded demo accounts & exercises
+manifest.json      # Progressive Web App manifest
+sw.js              # Service Worker offline caching
+icon.svg           # High-resolution vector icon
+icon-192.png       # App icon (192x192)
+icon-512.png       # App icon (512x512)
+README.md          # Complete documentation & guide
+.gitignore         # Git ignore rules
+```
 
 ---
 
-## 📱 How to Use & Install as an App (PWA)
+## 🚀 How to Update Your GitHub Repository (Step-by-Step)
 
-### On iPhone / iPad (iOS):
-1. Open your website link in **Safari**.
-2. Tap the **Share** button (box with an arrow pointing up at the bottom).
-3. Scroll down and tap **"Add to Home Screen"**.
-4. The **Lovely Homework!** red app icon will appear on your home screen and open full-screen just like a native App Store app!
+Because all files are now located directly in the root folder, updating your GitHub repository is super simple:
 
-### On Android:
-1. Open the website link in **Google Chrome**.
-2. Tap the three dots menu at the top right, or wait for the bottom prompt **"Install Lovely Homework!"**.
-3. Tap **Install** or **"Add to Home screen"**.
-4. Opens full screen with offline support!
+### Step 1: Open Your GitHub Repository
+1. Go to your repository on [github.com](https://github.com) (e.g. `https://github.com/<your-username>/lovely-homework`).
 
-### On Windows / Mac / Desktop:
-1. Open the website in Chrome or Edge.
-2. Click the **Install** icon in the address bar (computer monitor with a down arrow).
+### Step 2: Upload the Updated Files
+1. Click the **"Add file"** dropdown button near the top right of the file list.
+2. Select **"Upload files"**.
+3. Select or drag all the files from your local folder (`d:\CODES\Lovely Homework`):
+   - `index.html`
+   - `app.js`, `auth.js`, `db.js`, `homework.js`, `materials.js`, `funtime.js`, `students.js`, `notifications.js`, `i18n.js`, `seed-data.js`
+   - `main.css`, `components.css`, `player.css`, `responsive.css`
+   - `manifest.json`, `sw.js`
+   - `icon.svg`, `icon-192.png`, `icon-512.png`
+   - `README.md`
+4. Type a commit message (e.g. *"Fix root paths, secret teacher password, and real-time student notification"*).
+5. Click **"Commit changes"**.
 
----
-
-## 🔑 Login Credentials & Pre-loaded Demo Accounts
-
-The app comes pre-seeded with realistic data so you can test it immediately:
-
-| Role | Name | Identifier | Password / Code | Notes |
-|---|---|---|---|---|
-| **Teacher** | Mr. Aliyev | `Mr. Aliyev` | `Aliyev` | Master Teacher Account |
-| **Teacher** | Sarah Johnson | `Sarah` | `Aliyev` | Secondary Teacher |
-| **Student** | Leyla Huseynova | `Leyla` | `123` | Elementary (Has submitted photo homework & ready oral) |
-| **Student** | Rashad Aliyev | `Rashad` | `123` | Elementary (Marked "I am not ready") |
-| **Student** | Kamran Taghiyev | `Kamran` | `123` | **Pending Approval** (Test accepting a student request!) |
+### Step 3: Verify GitHub Pages
+1. In your repository, click **Settings** ➔ **Pages** (left sidebar).
+2. Ensure **Branch** is set to `main` (or `master`) and folder is `/(root)`.
+3. GitHub Pages will rebuild automatically within ~30 seconds.
+4. Refresh your live URL!
 
 ---
 
-## 💾 Local Storage & Unlimited Photos (IndexedDB)
+## 📱 How to Install as an App (PWA)
 
-Browser `localStorage` is restricted to ~5MB. To ensure that **hundreds of student homework photos and videos** can be uploaded without crashing or running out of space, this app uses **IndexedDB**:
-- Unlimited local photo and document storage.
-- High-resolution image lightbox viewer with download capabilities.
-- **Backup & Restore**: Click the 💾 icon in the top header anytime to download a full JSON backup of all your students, homework, and materials.
+- **On iPhone / iPad**: Open your site link in **Safari**, tap the **Share** button ➔ tap **"Add to Home Screen"**.
+- **On Android**: Open in **Google Chrome**, tap the three dots or prompt ➔ tap **"Install App"** / **"Add to Home screen"**.
+- **On Windows / Mac**: Open in Chrome/Edge and click the **Install** button in the address bar.
 
 ---
 
-## 📄 License
-Created with ❤️ for teachers and students worldwide.
+## 🔑 Login Credentials
+
+| Role | Username / Identifier | Password | Details |
+|---|---|---|---|
+| **Teacher** | `Mr. Aliyev` (or any teacher name) | **`Aliyev`** | Secret master password |
+| **Student (Demo 1)** | `Leyla` | `123` | Elementary (Photo submitted + Ready oral) |
+| **Student (Demo 2)** | `Rashad` | `123` | Elementary (Not ready oral) |
+| **Student (Demo 3)** | `Kamran` | `123` | Pending approval (Ready for teacher confirmation) |

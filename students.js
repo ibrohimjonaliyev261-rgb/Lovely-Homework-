@@ -64,6 +64,7 @@ class StudentsModule {
                   <div class="pending-avatar">${s.avatar || '🧑‍🎓'}</div>
                   <div>
                     <h4>${this.escape(s.firstName)} ${this.escape(s.lastName)}</h4>
+                    <div class="text-xs text-gray mb-1">📧 ${this.escape(s.email)}</div>
                     <span class="badge badge-info">Requested Level: ${s.level}</span>
                     <span class="text-xs text-gray block mt-1">Requested: ${new Date(s.createdAt).toLocaleDateString()}</span>
                   </div>
@@ -112,6 +113,7 @@ class StudentsModule {
                   <span class="student-avatar-big">${s.avatar || '🧑‍🎓'}</span>
                   <div>
                     <h4>${this.escape(s.firstName)} ${this.escape(s.lastName)}</h4>
+                    <div class="text-xs text-gray">📧 ${this.escape(s.email)}</div>
                     <span class="badge badge-success">Active Student</span>
                   </div>
                 </div>
