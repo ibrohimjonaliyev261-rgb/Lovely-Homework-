@@ -207,7 +207,44 @@ class AuthManager {
     }
   }
 
-  // Teacher deletes a student
+  // Teacher changes a student's group (and optionally aligns level)
+  async changeStudentGroup(studentId, newGroupId) {
+    const student = await window.appDB.get('users', studentId);
+    if (!student) throw new Error('Student not found');
+
+    student.groupId = newGroupId || null;
+    if (newGroupId) {
+      const grp = await window.appDB.get('groups', newGroupId);
+      if (grp && grp.level) {
+        student.level = grp.level;
+      }
+    }
+
+    await window.appDB.put('users', student);
+
+    if (window.notifManager) {
+      window.notifManager.broadcastChange('student_group_changed', { studentId, newGroupId });
+      window.notifManager.update();
+    }
+    return student;
+  }
+
+  // Teacher removes student from a group (leaves account intact in roster)
+  async removeStudentFromGroup(studentId) {
+    const student = await window.appDB.get('users', studentId);
+    if (!student) return;
+
+    student.groupId = null;
+    await window.appDB.put('users', student);
+
+    if (window.notifManager) {
+      window.notifManager.broadcastChange('student_updated', { student });
+      window.notifManager.update();
+    }
+    return student;
+  }
+
+  // Teacher deletes a student entirely
   async deleteStudent(studentId) {
     await window.appDB.delete('users', studentId);
     if (window.notifManager) {

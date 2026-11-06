@@ -18,11 +18,20 @@ Featuring a bold **Dominantly RED with clean WHITE accents** aesthetic, full **N
   - Students open the app, tap **Student**, enter their pre-assigned Username and Password, and get instant access.
   - Alternatively, students can tap their name from the quick student chip list on shared devices.
 
-### 2. 👥 Group Management & Level Graduation
-- **Create Named Groups**: Organize students into classes (e.g. *"Morning Elementary-1"*, *"IELTS Champions"*, *"Evening Intermediate"*).
+### 2. 👥 Group Management, Student Transfers & Removals
+- **Create Named Groups**: Organize students into classes (e.g. *"118 Pre-Intermediate"*, *"Morning Elementary-1"*, *"IELTS Champions"*).
 - **Assigned Levels**: Each group has a designated level (*Beginner, Elementary, Pre-intermediate, Intermediate, IELTS Novice, IELTS Standard*).
+- **🔄 Change Student's Group**:
+  - If a student transfers to a new group, click the **`🔄` (Change Group)** button next to the student's name.
+  - Or click **"🔄 Move Student Here"** inside the target group card to quickly bring in an existing student.
+  - When transferred, the student's level automatically updates to match the new group!
+- **🗑️ Remove / Delete Student**:
+  - If a student changes groups or leaves the school, click the **`🗑️` (Remove)** icon next to their name.
+  - Choose between:
+    - **"Remove from this group only"**: Keeps their login and past work intact in the student roster, but removes them from this group.
+    - **"Delete student permanently"**: Use when a student leaves the course/school completely.
 - **Group Level Change & Graduation**:
-  - When students master a level, the teacher clicks **"Graduate / Change Level"** on the group card.
+  - When students master a level, click **"Graduate / Promote Group"** on the group card.
   - Selecting the new level automatically promotes and updates **all enrolled students** in that group at once!
 
 ### 3. 👨‍🏫 Teacher Secret Master Access

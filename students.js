@@ -1,6 +1,6 @@
 // Lovely Homework! - Groups & Students Roster Hub
 // Handles: Groups creation, Group level updates/graduation, Pre-created Student accounts,
-// Roster credentials viewing & sharing.
+// Changing student's group, Removing/deleting students, Roster credentials viewing & sharing.
 
 class StudentsModule {
   constructor() {
@@ -35,7 +35,7 @@ class StudentsModule {
             <span>👥</span> ${window.i18n.get('tabStudents')}
           </h2>
           <p class="section-subtitle">
-            Manage your student groups, assign pre-created credentials, and graduate groups to next levels
+            Manage your student groups, assign pre-created credentials, change groups, and graduate classes
           </p>
         </div>
 
@@ -76,7 +76,7 @@ class StudentsModule {
         <div class="empty-state">
           <div class="empty-icon">👥</div>
           <h3>${window.i18n.get('noGroupsYet')}</h3>
-          <p>Create your first group (e.g. "Morning Elementary-1" or "IELTS Champions") to organize your students.</p>
+          <p>Create your first group (e.g. "Morning Elementary-1" or "118 Pre-Intermediate") to organize your students.</p>
           <button class="btn btn-primary mt-3" id="empty-create-group-btn">
             ${window.i18n.get('createGroupBtn')}
           </button>
@@ -110,9 +110,14 @@ class StudentsModule {
               <div class="group-students-box">
                 <div class="group-box-title">
                   <span>Enrolled Students (${groupStudents.length}):</span>
-                  <button class="btn btn-sm btn-link quick-add-student-btn" data-group-id="${grp.id}">
-                    ➕ Add Student
-                  </button>
+                  <div class="group-box-actions">
+                    <button class="btn btn-sm btn-link quick-add-student-btn" data-group-id="${grp.id}">
+                      ➕ Add Student
+                    </button>
+                    <button class="btn btn-sm btn-link quick-transfer-student-btn" data-group-id="${grp.id}" title="Move an existing student into this group">
+                      ${window.i18n.get('moveStudentHere')}
+                    </button>
+                  </div>
                 </div>
 
                 ${groupStudents.length === 0 ? `
@@ -132,8 +137,14 @@ class StudentsModule {
                           <button class="btn btn-sm btn-link copy-one-btn" data-info="${this.escape(st.firstName)} ${this.escape(st.lastName)} | Username: ${st.username} | Password: ${st.password || '12345'}" title="Copy Login Info">
                             📋
                           </button>
+                          <button class="btn btn-sm btn-link change-group-btn" data-id="${st.id}" data-current-group="${grp.id}" title="${window.i18n.get('changeGroupBtn')}">
+                            🔄
+                          </button>
                           <button class="btn btn-sm btn-link edit-student-btn" data-id="${st.id}" title="Edit Student">
                             ✏️
+                          </button>
+                          <button class="btn btn-sm btn-link remove-student-btn text-red" data-id="${st.id}" data-current-group="${grp.id}" title="${window.i18n.get('removeStudentBtn')}">
+                            🗑️
                           </button>
                         </div>
                       </div>
@@ -174,13 +185,14 @@ class StudentsModule {
 
     return `
       <div class="roster-table-container">
-        <div class="roster-table-header mb-3">
+        <div class="roster-table-header p-3" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color);">
+          <span class="font-bold text-sm">Total Students: ${allStudents.length}</span>
           <button id="copy-all-roster-btn" class="btn btn-outline-primary btn-sm">
             📋 ${window.i18n.get('copyCredentials')} (All Students)
           </button>
         </div>
 
-        <table class="data-table">
+        <table class="roster-table">
           <thead>
             <tr>
               <th>Student Name</th>
@@ -188,7 +200,7 @@ class StudentsModule {
               <th>Password</th>
               <th>Group</th>
               <th>Level</th>
-              <th>Actions</th>
+              <th style="text-align:right;">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -206,21 +218,28 @@ class StudentsModule {
                     <span class="password-chip">🔑 ${this.escape(st.password || '12345')}</span>
                   </td>
                   <td>
-                    ${grp ? `<span class="badge badge-info">${this.escape(grp.name)}</span>` : '<span class="text-xs text-gray">No Group</span>'}
+                    ${grp 
+                      ? `<span class="badge badge-info">${this.escape(grp.name)}</span>` 
+                      : '<span class="text-xs text-gray italic">No Group</span>'}
                   </td>
                   <td>
                     <span class="badge badge-teacher">${st.level || 'Beginner'}</span>
                   </td>
-                  <td>
-                    <button class="btn btn-sm btn-outline-primary copy-one-btn" data-info="${this.escape(st.firstName)} ${this.escape(st.lastName)} | Username: ${st.username} | Password: ${st.password || '12345'}">
-                      📋 Copy
-                    </button>
-                    <button class="btn btn-sm btn-secondary edit-student-btn" data-id="${st.id}">
-                      ✏️ Edit
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger delete-student-btn" data-id="${st.id}">
-                      🗑️
-                    </button>
+                  <td style="text-align:right;">
+                    <div style="display:inline-flex; gap:0.35rem; align-items:center;">
+                      <button class="btn btn-sm btn-outline-primary copy-one-btn" data-info="${this.escape(st.firstName)} ${this.escape(st.lastName)} | Username: ${st.username} | Password: ${st.password || '12345'}" title="Copy">
+                        📋
+                      </button>
+                      <button class="btn btn-sm btn-secondary change-group-btn" data-id="${st.id}" data-current-group="${st.groupId || ''}" title="${window.i18n.get('changeGroupBtn')}">
+                        🔄 ${window.i18n.get('changeGroupBtn')}
+                      </button>
+                      <button class="btn btn-sm btn-secondary edit-student-btn" data-id="${st.id}" title="Edit">
+                        ✏️
+                      </button>
+                      <button class="btn btn-sm btn-outline-danger remove-student-btn" data-id="${st.id}" data-current-group="${st.groupId || ''}" title="${window.i18n.get('removeStudentBtn')}">
+                        🗑️
+                      </button>
+                    </div>
                   </td>
                 </tr>
               `;
@@ -270,6 +289,14 @@ class StudentsModule {
       });
     });
 
+    // Quick transfer / enroll student into this group
+    this.container.querySelectorAll('.quick-transfer-student-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const groupId = btn.getAttribute('data-group-id');
+        this.showMoveStudentHereModal(groupId, allGroups, allStudents);
+      });
+    });
+
     // Graduate Group button
     this.container.querySelectorAll('.graduate-group-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -299,6 +326,14 @@ class StudentsModule {
       });
     });
 
+    // Change Group for a student
+    this.container.querySelectorAll('.change-group-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const studentId = btn.getAttribute('data-id');
+        this.showChangeGroupModal(studentId, allGroups);
+      });
+    });
+
     // Edit Student button
     this.container.querySelectorAll('.edit-student-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -307,15 +342,12 @@ class StudentsModule {
       });
     });
 
-    // Delete Student button
-    this.container.querySelectorAll('.delete-student-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
+    // Remove / Delete Student button
+    this.container.querySelectorAll('.remove-student-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
         const studentId = btn.getAttribute('data-id');
-        if (confirm('Are you sure you want to delete this student account?')) {
-          await window.authManager.deleteStudent(studentId);
-          window.showToast('Student deleted.');
-          this.render();
-        }
+        const currentGroupId = btn.getAttribute('data-current-group');
+        this.showRemoveStudentModal(studentId, currentGroupId);
       });
     });
 
@@ -344,6 +376,242 @@ class StudentsModule {
         });
       });
     }
+  }
+
+  // Change Student's Group Modal
+  async showChangeGroupModal(studentId, allGroups) {
+    const student = await window.appDB.get('users', studentId);
+    if (!student) return;
+
+    const modalId = 'change-group-modal';
+    let modal = document.getElementById(modalId);
+    if (modal) modal.remove();
+
+    const currentGroup = allGroups.find(g => g.id === student.groupId);
+
+    const html = `
+      <div id="${modalId}" class="modal-overlay">
+        <div class="modal-content modal-md">
+          <div class="modal-header">
+            <h3>🔄 ${window.i18n.get('changeGroupTitle')}</h3>
+            <button class="modal-close-btn">&times;</button>
+          </div>
+          <form id="change-group-form" class="modal-body">
+            <div class="student-profile-summary-box mb-3 p-3" style="background:var(--primary-red-subtle); border-radius:var(--radius-md); border:1px solid var(--primary-red-border);">
+              <div style="font-size:1.05rem;">🧑‍🎓 <strong>${this.escape(student.firstName)} ${this.escape(student.lastName)}</strong> (<code>${this.escape(student.username)}</code>)</div>
+              <div class="text-xs text-gray mt-1">
+                ${window.i18n.get('currentGroup')}: <strong>${currentGroup ? this.escape(currentGroup.name) : 'No Group'}</strong> &bull; Level: <strong>${student.level}</strong>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>${window.i18n.get('targetGroup')} *</label>
+              <select id="transfer-target-group-select" class="form-control">
+                <option value="">-- No Group (Unassigned) --</option>
+                ${allGroups.map(g => `
+                  <option value="${g.id}" ${g.id === student.groupId ? 'selected' : ''}>
+                    ${this.escape(g.name)} (Level: ${g.level})
+                  </option>
+                `).join('')}
+              </select>
+            </div>
+
+            <div id="transfer-level-preview" class="notice-box mt-3 p-2 text-xs" style="background:var(--bg-subtle); border-radius:var(--radius-sm); border:1px solid var(--border-color);">
+              💡 <em>Student's level will automatically update to match the selected group.</em>
+            </div>
+
+            <div class="modal-footer mt-4">
+              <button type="button" class="btn btn-secondary modal-close-btn">${window.i18n.get('cancel')}</button>
+              <button type="submit" class="btn btn-primary">
+                ${window.i18n.get('confirmTransfer')} 🚀
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', html);
+    modal = document.getElementById(modalId);
+
+    const selectEl = modal.querySelector('#transfer-target-group-select');
+    const previewEl = modal.querySelector('#transfer-level-preview');
+
+    const updatePreview = () => {
+      const selectedId = selectEl.value;
+      const grp = allGroups.find(g => g.id === selectedId);
+      if (grp) {
+        previewEl.innerHTML = `✅ <strong>New Group:</strong> ${this.escape(grp.name)} &bull; <strong>New Level:</strong> <span class="badge badge-teacher">${grp.level}</span>`;
+      } else {
+        previewEl.innerHTML = `⚠️ <em>Student will be unassigned from all groups, keeping their current level (${student.level}).</em>`;
+      }
+    };
+
+    selectEl.addEventListener('change', updatePreview);
+    updatePreview();
+
+    modal.querySelectorAll('.modal-close-btn').forEach(b => b.addEventListener('click', () => modal.remove()));
+
+    modal.querySelector('#change-group-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const targetGroupId = selectEl.value || null;
+      await window.authManager.changeStudentGroup(studentId, targetGroupId);
+      modal.remove();
+      window.showToast(window.i18n.get('studentMovedSuccess'));
+      this.render();
+    });
+  }
+
+  // Remove Student Modal: Choose between "Remove from this group only" or "Delete permanently"
+  async showRemoveStudentModal(studentId, currentGroupId = null) {
+    const student = await window.appDB.get('users', studentId);
+    if (!student) return;
+
+    let currentGroup = null;
+    const targetGid = currentGroupId || student.groupId;
+    if (targetGid) {
+      currentGroup = await window.appDB.get('groups', targetGid);
+    }
+
+    const modalId = 'remove-student-modal';
+    let modal = document.getElementById(modalId);
+    if (modal) modal.remove();
+
+    const html = `
+      <div id="${modalId}" class="modal-overlay">
+        <div class="modal-content modal-md">
+          <div class="modal-header">
+            <h3>🗑️ ${window.i18n.get('removeStudentTitle')}</h3>
+            <button class="modal-close-btn">&times;</button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-3">
+              What action would you like to take for <strong>${this.escape(student.firstName)} ${this.escape(student.lastName)}</strong> (<code>${this.escape(student.username)}</code>)?
+            </p>
+
+            <div class="remove-options-grid" style="display:flex; flex-direction:column; gap:0.85rem;">
+              ${currentGroup ? `
+                <button type="button" id="btn-remove-from-group-only" class="btn btn-secondary text-left p-3" style="display:flex; align-items:flex-start; gap:0.75rem; border:1px solid var(--border-color); text-align:left; cursor:pointer;">
+                  <span style="font-size:1.6rem;">🚪</span>
+                  <div>
+                    <strong style="color:var(--text-main); font-size:0.95rem;">${window.i18n.get('removeFromGroup')} ("${this.escape(currentGroup.name)}")</strong>
+                    <p class="text-xs text-gray mt-1">Keeps student's login and past submissions intact, but removes them from this group.</p>
+                  </div>
+                </button>
+              ` : ''}
+
+              <button type="button" id="btn-delete-student-completely" class="btn btn-outline-danger text-left p-3" style="display:flex; align-items:flex-start; gap:0.75rem; text-align:left; cursor:pointer;">
+                <span style="font-size:1.6rem;">🗑️</span>
+                <div>
+                  <strong style="font-size:0.95rem;">${window.i18n.get('deleteStudentPermanently')}</strong>
+                  <p class="text-xs text-gray mt-1">Use this if the student has left the course or school completely. Deletes their login profile.</p>
+                </div>
+              </button>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary modal-close-btn">${window.i18n.get('cancel')}</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', html);
+    modal = document.getElementById(modalId);
+
+    modal.querySelectorAll('.modal-close-btn').forEach(b => b.addEventListener('click', () => modal.remove()));
+
+    const removeFromGroupBtn = modal.querySelector('#btn-remove-from-group-only');
+    if (removeFromGroupBtn) {
+      removeFromGroupBtn.addEventListener('click', async () => {
+        await window.authManager.removeStudentFromGroup(studentId);
+        modal.remove();
+        window.showToast(`${student.firstName} was removed from ${currentGroup?.name || 'the group'}.`);
+        this.render();
+      });
+    }
+
+    const deleteCompletelyBtn = modal.querySelector('#btn-delete-student-completely');
+    if (deleteCompletelyBtn) {
+      deleteCompletelyBtn.addEventListener('click', async () => {
+        if (confirm(`Are you completely sure you want to delete ${student.firstName} ${student.lastName}? This cannot be undone.`)) {
+          await window.authManager.deleteStudent(studentId);
+          modal.remove();
+          window.showToast(window.i18n.get('studentRemovedSuccess'));
+          this.render();
+        }
+      });
+    }
+  }
+
+  // Move Student Here Modal: Allows moving any existing student into this target group
+  async showMoveStudentHereModal(targetGroupId, allGroups, allStudents) {
+    const targetGroup = allGroups.find(g => g.id === targetGroupId);
+    if (!targetGroup) return;
+
+    const candidateStudents = allStudents.filter(s => s.groupId !== targetGroupId);
+
+    const modalId = 'move-student-here-modal';
+    let modal = document.getElementById(modalId);
+    if (modal) modal.remove();
+
+    const html = `
+      <div id="${modalId}" class="modal-overlay">
+        <div class="modal-content modal-md">
+          <div class="modal-header">
+            <h3>🔄 ${window.i18n.get('moveStudentHere')}</h3>
+            <button class="modal-close-btn">&times;</button>
+          </div>
+          <form id="move-student-here-form" class="modal-body">
+            <div class="mb-3 p-3" style="background:var(--primary-red-subtle); border-radius:var(--radius-md); border:1px solid var(--primary-red-border);">
+              <strong>Target Group:</strong> ${this.escape(targetGroup.name)}
+              <span class="badge badge-teacher ml-2">🎓 ${targetGroup.level}</span>
+            </div>
+
+            ${candidateStudents.length === 0 ? `
+              <p class="text-sm text-gray italic">All registered students are already enrolled in this group, or there are no other students created yet.</p>
+            ` : `
+              <div class="form-group">
+                <label>Select Student to Transfer to "${this.escape(targetGroup.name)}" *</label>
+                <select id="candidate-student-select" class="form-control" required>
+                  ${candidateStudents.map(s => {
+                    const currGrp = allGroups.find(g => g.id === s.groupId);
+                    const grpName = currGrp ? currGrp.name : 'No Group';
+                    return `<option value="${s.id}">${this.escape(s.firstName)} ${this.escape(s.lastName)} (Current: ${grpName} - ${s.level})</option>`;
+                  }).join('')}
+                </select>
+                <p class="text-xs text-gray mt-1">Their group and level will automatically change to ${this.escape(targetGroup.name)} (${targetGroup.level}).</p>
+              </div>
+            `}
+
+            <div class="modal-footer mt-4">
+              <button type="button" class="btn btn-secondary modal-close-btn">${window.i18n.get('cancel')}</button>
+              ${candidateStudents.length > 0 ? `
+                <button type="submit" class="btn btn-primary">
+                  ${window.i18n.get('confirmTransfer')} 🚀
+                </button>
+              ` : ''}
+            </div>
+          </form>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', html);
+    modal = document.getElementById(modalId);
+
+    modal.querySelectorAll('.modal-close-btn').forEach(b => b.addEventListener('click', () => modal.remove()));
+
+    modal.querySelector('#move-student-here-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const stSelect = modal.querySelector('#candidate-student-select');
+      if (!stSelect) return;
+      const studentId = stSelect.value;
+      await window.authManager.changeStudentGroup(studentId, targetGroupId);
+      modal.remove();
+      window.showToast(window.i18n.get('studentMovedSuccess'));
+      this.render();
+    });
   }
 
   // Create Group Modal
@@ -529,6 +797,8 @@ class StudentsModule {
     if (modal) modal.remove();
 
     const levels = ['Beginner', 'Elementary', 'Pre-intermediate', 'Intermediate', 'IELTS Novice', 'IELTS Standard'];
+    const preselectedGroup = allGroups.find(g => g.id === preselectedGroupId);
+    const initialLevel = preselectedGroup ? preselectedGroup.level : 'Elementary';
 
     const html = `
       <div id="${modalId}" class="modal-overlay">
@@ -565,14 +835,14 @@ class StudentsModule {
                 <label>${window.i18n.get('selectGroup')}</label>
                 <select id="st-group-select" class="form-control">
                   <option value="">-- No Group Yet --</option>
-                  ${allGroups.map(g => `<option value="${g.id}" ${g.id === preselectedGroupId ? 'selected' : ''}>${g.name} (${g.level})</option>`).join('')}
+                  ${allGroups.map(g => `<option value="${g.id}" ${g.id === preselectedGroupId ? 'selected' : ''}>${this.escape(g.name)} (${g.level})</option>`).join('')}
                 </select>
               </div>
 
               <div class="form-group col-half">
                 <label>${window.i18n.get('selectLevel')}</label>
                 <select id="st-level-select" class="form-control">
-                  ${levels.map(l => `<option value="${l}">${l}</option>`).join('')}
+                  ${levels.map(l => `<option value="${l}" ${l === initialLevel ? 'selected' : ''}>${l}</option>`).join('')}
                 </select>
               </div>
             </div>
@@ -666,7 +936,7 @@ class StudentsModule {
                 <label>${window.i18n.get('selectGroup')}</label>
                 <select id="edit-st-group" class="form-control">
                   <option value="">-- No Group --</option>
-                  ${allGroups.map(g => `<option value="${g.id}" ${g.id === student.groupId ? 'selected' : ''}>${g.name} (${g.level})</option>`).join('')}
+                  ${allGroups.map(g => `<option value="${g.id}" ${g.id === student.groupId ? 'selected' : ''}>${this.escape(g.name)} (${g.level})</option>`).join('')}
                 </select>
               </div>
 
@@ -689,6 +959,15 @@ class StudentsModule {
 
     document.body.insertAdjacentHTML('beforeend', html);
     modal = document.getElementById(modalId);
+
+    const groupSelect = modal.querySelector('#edit-st-group');
+    const levelSelect = modal.querySelector('#edit-st-level');
+    groupSelect.addEventListener('change', () => {
+      const grp = allGroups.find(g => g.id === groupSelect.value);
+      if (grp) {
+        levelSelect.value = grp.level;
+      }
+    });
 
     modal.querySelectorAll('.modal-close-btn').forEach(b => b.addEventListener('click', () => modal.remove()));
 
