@@ -310,7 +310,7 @@ async showStudentLoginModal(prefilledUsername = '') {
         u.username.toLowerCase() === enteredUsername
       );
 
-      const expectedPassword = student?.password || '12345';
+      const expectedPassword = (student && student.password) ? student.password : '12345';
 
       if (student && enteredPassword === expectedPassword) {
         if (window.authManager) {
