@@ -130,23 +130,10 @@ class NotificationManager {
     const notifs = await this.getNotificationsForUser();
     const unread = notifs.filter(n => !n.isRead);
 
-    // If teacher, also check pending registration requests count directly
     let pendingCount = 0;
     if (user.role === 'teacher') {
-      const allUsers = await window.appDB.getAll('users');
-      const pendingStudents = allUsers.filter(u => u.role === 'student' && u.status === 'pending');
-      pendingCount = pendingStudents.length;
-
-      // Update badge directly on "Students & Groups" navigation tab
       const navPendingBadge = document.getElementById('nav-pending-badge');
-      if (navPendingBadge) {
-        if (pendingCount > 0) {
-          navPendingBadge.textContent = `${pendingCount} new`;
-          navPendingBadge.classList.remove('hidden');
-        } else {
-          navPendingBadge.classList.add('hidden');
-        }
-      }
+      if (navPendingBadge) navPendingBadge.classList.add('hidden');
     }
 
     const totalCount = Math.max(unread.length, pendingCount);
@@ -202,16 +189,7 @@ class NotificationManager {
   async renderDropdown(notifs) {
     if (!this.dropdownEl) return;
 
-    const user = window.authManager?.currentUser;
-
-    // Check if there are pending students (for teacher)
-    let pendingStudents = [];
-    if (user && user.role === 'teacher') {
-      const allUsers = await window.appDB.getAll('users');
-      pendingStudents = allUsers.filter(u => u.role === 'student' && u.status === 'pending');
-    }
-
-    if ((!notifs || notifs.length === 0) && pendingStudents.length === 0) {
+    if (!notifs || notifs.length === 0) {
       this.dropdownEl.innerHTML = `
         <div class="notif-header">
           <span class="font-bold">${window.i18n.get('notifications')}</span>
@@ -225,26 +203,6 @@ class NotificationManager {
     }
 
     const unreadCount = notifs.filter(n => !n.isRead).length;
-
-    // Pending student approval items at the very top for teachers
-    let pendingBannerHtml = '';
-    if (pendingStudents.length > 0) {
-      pendingBannerHtml = `
-        <div class="notif-pending-banner">
-          <div class="notif-banner-head">
-            <strong>⏳ ${pendingStudents.length} Student Registration(s) Awaiting Approval</strong>
-          </div>
-          ${pendingStudents.map(s => `
-            <div class="notif-quick-student">
-              <span>🧑‍🎓 <strong>${this.escape(s.firstName)} ${this.escape(s.lastName)}</strong> (${s.level})</span>
-              <button class="btn btn-sm btn-primary quick-review-btn" onclick="window.appRouter.navigate('students'); window.notifManager.closeDropdown();">
-                Review & Confirm
-              </button>
-            </div>
-          `).join('')}
-        </div>
-      `;
-    }
 
     let itemsHtml = notifs.map(n => {
       let icon = '📌';
@@ -279,7 +237,6 @@ class NotificationManager {
           </button>
         ` : ''}
       </div>
-      ${pendingBannerHtml}
       <div class="notif-list">
         ${itemsHtml}
       </div>

@@ -1,5 +1,5 @@
 // Lovely Homework! - Initial Seed Data
-// Pre-populates the database on first load with realistic teachers, students, homework, materials, and videos
+// Pre-populates the database on first load with realistic teachers, groups, students, homework, materials, and videos
 
 const SAMPLE_VTT_SUBTITLES = `WEBVTT
 
@@ -25,7 +25,7 @@ Enjoy your lesson and have a wonderful study session!
 // Sample SVG placeholder as a data URL for textbook photos
 function createSampleBookPageSvg(title, subtitle) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800">
-    <rect width="600" height="800" fill="#FFFDF8" stroke="#E53935" stroke-width="8"/>
+    <rect width="600" height="800" fill="#FFFDF8" stroke="#D32F2F" stroke-width="8"/>
     <rect x="20" y="20" width="560" height="80" rx="8" fill="#FFEBEE"/>
     <text x="40" y="65" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#D32F2F">${title}</text>
     <text x="40" y="130" font-family="Arial, sans-serif" font-size="18" fill="#333">${subtitle}</text>
@@ -34,7 +34,7 @@ function createSampleBookPageSvg(title, subtitle) {
     <rect x="40" y="160" width="520" height="150" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
     <text x="60" y="195" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#1E293B">Exercise 1: Fill in the correct tense</text>
     <text x="60" y="230" font-family="Arial, sans-serif" font-size="16" fill="#475569">1. Yesterday, Sarah ________ (go) to the supermarket.</text>
-    <text x="60" y="260" font-family="Arial, sans-serif" font-size="16" fill="#475569">2. They ________ (live) in Baku since 2018.</text>
+    <text x="60" y="260" font-family="Arial, sans-serif" font-size="16" fill="#475569">2. They ________ (live) in Tashkent since 2018.</text>
     <text x="60" y="290" font-family="Arial, sans-serif" font-size="16" fill="#475569">3. Look! The children ________ (play) in the garden right now.</text>
 
     <!-- Exercise 2 -->
@@ -73,7 +73,7 @@ function createSampleStudentSubmissionSvg(studentName) {
     
     <text x="100" y="80" font-family="'Comic Sans MS', cursive, sans-serif" font-size="20" fill="#1E3A8A">Homework by: ${studentName}</text>
     <text x="100" y="125" font-family="'Comic Sans MS', cursive, sans-serif" font-size="18" fill="#1E3A8A">1. Sarah went to the supermarket yesterday.</text>
-    <text x="100" y="165" font-family="'Comic Sans MS', cursive, sans-serif" font-size="18" fill="#1E3A8A">2. They have lived in Baku since 2018.</text>
+    <text x="100" y="165" font-family="'Comic Sans MS', cursive, sans-serif" font-size="18" fill="#1E3A8A">2. They have lived here since 2018.</text>
     <text x="100" y="205" font-family="'Comic Sans MS', cursive, sans-serif" font-size="18" fill="#1E3A8A">3. Look! The children are playing right now.</text>
     <text x="100" y="245" font-family="'Comic Sans MS', cursive, sans-serif" font-size="18" fill="#1E3A8A">4. Where did you buy that lovely book?</text>
     <text x="100" y="285" font-family="'Comic Sans MS', cursive, sans-serif" font-size="18" fill="#1E3A8A">5. I really enjoyed this homework!</text>
@@ -87,9 +87,76 @@ function createSampleStudentSubmissionSvg(studentName) {
 }
 
 async function checkAndSeedData(db) {
+  // Check and seed groups if needed
+  let existingGroups = await db.getAll('groups');
+  if (!existingGroups || existingGroups.length === 0) {
+    const defaultGroups = [
+      {
+        id: 'group_elem_1',
+        name: 'Elementary Stars - Group 1',
+        level: 'Elementary',
+        teacherId: 'teacher_aliyev',
+        createdAt: new Date(Date.now() - 86400000 * 7).toISOString()
+      },
+      {
+        id: 'group_beg_1',
+        name: 'Beginner Youngsters',
+        level: 'Beginner',
+        teacherId: 'teacher_aliyev',
+        createdAt: new Date(Date.now() - 86400000 * 6).toISOString()
+      },
+      {
+        id: 'group_inter_1',
+        name: 'Intermediate Champions',
+        level: 'Intermediate',
+        teacherId: 'teacher_aliyev',
+        createdAt: new Date(Date.now() - 86400000 * 5).toISOString()
+      },
+      {
+        id: 'group_ielts_1',
+        name: 'IELTS Standard FastTrack',
+        level: 'IELTS Standard',
+        teacherId: 'teacher_aliyev',
+        createdAt: new Date(Date.now() - 86400000 * 4).toISOString()
+      }
+    ];
+    for (const g of defaultGroups) {
+      await db.put('groups', g);
+    }
+  }
+
   const users = await db.getAll('users');
   if (users && users.length > 0) {
-    return; // Already initialized
+    // If users already exist, ensure students have username and groupId
+    for (const u of users) {
+      if (u.role === 'student') {
+        let changed = false;
+        if (!u.username) {
+          u.username = u.email || (u.firstName?.toLowerCase() || 'student');
+          changed = true;
+        }
+        if (!u.groupId) {
+          if (u.level === 'Beginner') u.groupId = 'group_beg_1';
+          else if (u.level === 'Elementary') u.groupId = 'group_elem_1';
+          else if (u.level === 'Intermediate') u.groupId = 'group_inter_1';
+          else if (u.level === 'IELTS Standard') u.groupId = 'group_ielts_1';
+          else u.groupId = 'group_elem_1';
+          changed = true;
+        }
+        if (!u.password) {
+          u.password = '12345';
+          changed = true;
+        }
+        if (u.status === 'pending') {
+          u.status = 'active';
+          changed = true;
+        }
+        if (changed) {
+          await db.put('users', u);
+        }
+      }
+    }
+    return;
   }
 
   console.log('Seeding initial Lovely Homework! data...');
@@ -101,37 +168,26 @@ async function checkAndSeedData(db) {
     firstName: 'Mr. Aliyev',
     lastName: 'Teacher',
     email: 'aliyev@lovelyhomework.com',
+    username: 'aliyev',
     password: 'Aliyev',
     status: 'active',
     avatar: '👨‍🏫',
     createdAt: new Date().toISOString()
   };
 
-  const teacherSarah = {
-    id: 'teacher_sarah',
-    role: 'teacher',
-    firstName: 'Sarah',
-    lastName: 'Johnson',
-    email: 'sarah@lovelyhomework.com',
-    password: 'Aliyev',
-    status: 'active',
-    avatar: '👩‍🏫',
-    createdAt: new Date().toISOString()
-  };
-
   await db.put('users', teacherAliyev);
-  await db.put('users', teacherSarah);
 
-  // 2. Students across levels
+  // 2. Pre-Created Students with Usernames and Passwords
   const students = [
     {
       id: 'student_1',
       role: 'student',
       firstName: 'Farid',
       lastName: 'Mammadov',
-      email: 'farid',
+      username: 'farid',
       password: '123',
       level: 'Beginner',
+      groupId: 'group_beg_1',
       teacherId: 'teacher_aliyev',
       status: 'active',
       avatar: '👦',
@@ -142,9 +198,10 @@ async function checkAndSeedData(db) {
       role: 'student',
       firstName: 'Leyla',
       lastName: 'Huseynova',
-      email: 'leyla',
+      username: 'leyla',
       password: '123',
       level: 'Elementary',
+      groupId: 'group_elem_1',
       teacherId: 'teacher_aliyev',
       status: 'active',
       avatar: '👧',
@@ -155,9 +212,10 @@ async function checkAndSeedData(db) {
       role: 'student',
       firstName: 'Rashad',
       lastName: 'Aliyev',
-      email: 'rashad',
+      username: 'rashad',
       password: '123',
       level: 'Elementary',
+      groupId: 'group_elem_1',
       teacherId: 'teacher_aliyev',
       status: 'active',
       avatar: '🧑',
@@ -168,9 +226,10 @@ async function checkAndSeedData(db) {
       role: 'student',
       firstName: 'Aysel',
       lastName: 'Karimova',
-      email: 'aysel',
+      username: 'aysel',
       password: '123',
-      level: 'Pre-intermediate',
+      level: 'Elementary',
+      groupId: 'group_elem_1',
       teacherId: 'teacher_aliyev',
       status: 'active',
       avatar: '👩',
@@ -181,9 +240,10 @@ async function checkAndSeedData(db) {
       role: 'student',
       firstName: 'Elvin',
       lastName: 'Guliyev',
-      email: 'elvin',
+      username: 'elvin',
       password: '123',
       level: 'Intermediate',
+      groupId: 'group_inter_1',
       teacherId: 'teacher_aliyev',
       status: 'active',
       avatar: '👨',
@@ -194,27 +254,14 @@ async function checkAndSeedData(db) {
       role: 'student',
       firstName: 'Nigar',
       lastName: 'Safarova',
-      email: 'nigar',
+      username: 'nigar',
       password: '123',
       level: 'IELTS Standard',
+      groupId: 'group_ielts_1',
       teacherId: 'teacher_aliyev',
       status: 'active',
       avatar: '👩‍🎓',
       createdAt: new Date(Date.now() - 86400000 * 8).toISOString()
-    },
-    // Pending student (for testing teacher confirmation!)
-    {
-      id: 'student_pending_1',
-      role: 'student',
-      firstName: 'Kamran',
-      lastName: 'Taghiyev',
-      email: 'kamran',
-      password: '123',
-      level: 'Intermediate',
-      teacherId: 'teacher_aliyev',
-      status: 'pending',
-      avatar: '🧑‍🎓',
-      createdAt: new Date().toISOString()
     }
   ];
 
@@ -229,6 +276,7 @@ async function checkAndSeedData(db) {
   const hwElementaryPaper = {
     id: 'hw_elem_1',
     teacherId: 'teacher_aliyev',
+    groupId: 'group_elem_1',
     title: 'Unit 4: Present Continuous & Past Simple Written Exercises',
     level: 'Elementary',
     type: 'paper',
@@ -248,6 +296,7 @@ async function checkAndSeedData(db) {
   const hwElementaryOral = {
     id: 'hw_elem_2',
     teacherId: 'teacher_aliyev',
+    groupId: 'group_elem_1',
     title: 'Speaking Task: Describe Your Typical Weekend & Learn 10 Words',
     level: 'Elementary',
     type: 'oral',
@@ -260,6 +309,7 @@ async function checkAndSeedData(db) {
   const hwIntermediateOral = {
     id: 'hw_inter_1',
     teacherId: 'teacher_aliyev',
+    groupId: 'group_inter_1',
     title: 'Oral Speaking: Travel Dilemmas & 15 Advanced Collocations',
     level: 'Intermediate',
     type: 'oral',
@@ -272,6 +322,7 @@ async function checkAndSeedData(db) {
   const hwBeginnerPaper = {
     id: 'hw_beg_1',
     teacherId: 'teacher_aliyev',
+    groupId: 'group_beg_1',
     title: 'Alphabet & Basic Sentence Formation (Page 12)',
     level: 'Beginner',
     type: 'paper',
@@ -294,7 +345,6 @@ async function checkAndSeedData(db) {
   await db.put('homework', hwBeginnerPaper);
 
   // 4. Sample Submissions
-  // Leyla submitted written photos
   const subLeyla = {
     id: 'sub_1',
     homeworkId: 'hw_elem_1',
@@ -316,7 +366,6 @@ async function checkAndSeedData(db) {
     updatedAt: new Date(Date.now() - 3600000 * 4).toISOString()
   };
 
-  // Leyla marked oral as ready
   const subLeylaOral = {
     id: 'sub_2',
     homeworkId: 'hw_elem_2',
@@ -331,7 +380,6 @@ async function checkAndSeedData(db) {
     updatedAt: new Date(Date.now() - 3600000 * 2).toISOString()
   };
 
-  // Rashad marked oral as not ready
   const subRashadOral = {
     id: 'sub_3',
     homeworkId: 'hw_elem_2',
@@ -384,7 +432,7 @@ async function checkAndSeedData(db) {
     level: 'Intermediate',
     category: 'document',
     description: '30 essential phrasal verbs for everyday conversation and natural speaking fluency.',
-    fileData: 'data:text/plain;charset=utf-8,30%20Essential%20Phrasal%20Verbs%20for%20Intermediate%20Students%0A%0A1.%20Bring%20up%20-%20to%20mention%20a%20topic%0A2.%20Call%20off%20-%20to%20cancel%0A3.%20Carry%20on%20-%20to%20continue%0A4.%20Come%20across%20-%20to%20find%20by%20chance%0A5.%20Figure%20out%20-%20to%20solve%20or%20understand%0A6.%20Get%20along%20-%20to%20have%20a%20good%20relationship%0A7.%20Give%20up%20-%20to%20stop%20trying%0A8.%20Look%20forward%20to%20-%20to%20anticipate%20with%20pleasure%0A9.%20Put%20off%20-%20to%20postpone%0A10.%20Turn%20down%20-%20to%20refuse%20or%20lower%20volume',
+    fileData: 'data:text/plain;charset=utf-8,30%20Essential%20Phrasal%20Verbs%20for%20Intermediate%20Students',
     fileName: 'Phrasal_Verbs_Summary.docx',
     fileSize: '1.2 MB',
     createdAt: new Date(Date.now() - 86400000 * 4).toISOString()
@@ -437,36 +485,6 @@ async function checkAndSeedData(db) {
   await db.put('funtime', funCartoon);
   await db.put('funtime', funMovie);
   await db.put('funtime', funSeries);
-
-  // 7. Initial Notifications
-  const notifs = [
-    {
-      id: 'notif_1',
-      recipientId: 'all',
-      title: 'Welcome to Lovely Homework! 🎉',
-      message: 'New assignments, video lessons, and cartoons are now available in your portal.',
-      type: 'homework',
-      targetLevel: 'Elementary',
-      targetItemId: 'hw_elem_1',
-      isRead: false,
-      createdAt: new Date(Date.now() - 3600000).toISOString()
-    },
-    {
-      id: 'notif_2',
-      recipientId: 'teacher_aliyev',
-      title: 'New Student Registration Pending 🔔',
-      message: 'Kamran Taghiyev requested to join the Intermediate level. Click to review and approve!',
-      type: 'registration',
-      targetLevel: 'Intermediate',
-      targetItemId: 'student_pending_1',
-      isRead: false,
-      createdAt: new Date().toISOString()
-    }
-  ];
-
-  for (const n of notifs) {
-    await db.put('notifications', n);
-  }
 
   console.log('Seed data successfully loaded.');
 }

@@ -2,7 +2,7 @@
 // Full offline & local persistent storage for heavy media (photos, videos, subtitles)
 
 const DB_NAME = 'LovelyHomeworkDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 class HomeworkDB {
   constructor() {
@@ -22,14 +22,23 @@ class HomeworkDB {
           const userStore = db.createObjectStore('users', { keyPath: 'id' });
           userStore.createIndex('role', 'role', { unique: false });
           userStore.createIndex('level', 'level', { unique: false });
-          userStore.createIndex('email', 'email', { unique: false });
+          userStore.createIndex('groupId', 'groupId', { unique: false });
+          userStore.createIndex('username', 'username', { unique: false });
           userStore.createIndex('status', 'status', { unique: false });
+        }
+
+        // Groups store
+        if (!db.objectStoreNames.contains('groups')) {
+          const groupStore = db.createObjectStore('groups', { keyPath: 'id' });
+          groupStore.createIndex('level', 'level', { unique: false });
+          groupStore.createIndex('teacherId', 'teacherId', { unique: false });
         }
 
         // Homework store
         if (!db.objectStoreNames.contains('homework')) {
           const hwStore = db.createObjectStore('homework', { keyPath: 'id' });
           hwStore.createIndex('level', 'level', { unique: false });
+          hwStore.createIndex('groupId', 'groupId', { unique: false });
           hwStore.createIndex('teacherId', 'teacherId', { unique: false });
           hwStore.createIndex('createdAt', 'createdAt', { unique: false });
         }
@@ -173,7 +182,7 @@ class HomeworkDB {
 
   // Backup export
   async exportAllData() {
-    const stores = ['users', 'homework', 'submissions', 'materials', 'funtime', 'notifications', 'settings'];
+    const stores = ['users', 'groups', 'homework', 'submissions', 'materials', 'funtime', 'notifications', 'settings'];
     const exportObj = {};
     for (const name of stores) {
       exportObj[name] = await this.getAll(name);

@@ -1,25 +1,37 @@
 /* ==========================================================================
    Lovely Homework! - Main Stylesheet
-   Color Theme: Red & White with Night Mode support
+   Color Theme: Dominantly RED with clean WHITE accents
+   Multi-language: English, Uzbek, Russian
    ========================================================================== */
 
 :root {
-  /* Brand Red & White Palette */
-  --primary-red: #D32F2F;
-  --primary-red-hover: #B71C1C;
-  --primary-red-light: #FFEBEE;
-  --primary-red-border: #FFCDD2;
-  --accent-red: #E53935;
-  --accent-soft: #EF5350;
+  /* Brand Red & White Dominant Palette */
+  --primary-red: #DC2626;
+  --primary-red-hover: #B91C1C;
+  --primary-red-deep: #881337;
+  --primary-red-dark: #991B1B;
+  --primary-red-light: #FFE4E6;
+  --primary-red-subtle: #FFF1F2;
+  --primary-red-border: #FECDD3;
+  --accent-red: #EF4444;
 
-  /* Neutrals (Light Mode) */
-  --bg-main: #F8FAFC;
+  /* Surfaces & Canvas (Warm Red & White) */
+  --bg-main: #FFF1F2;
   --bg-card: #FFFFFF;
-  --bg-subtle: #F1F5F9;
-  --border-color: #E2E8F0;
-  --text-main: #0F172A;
-  --text-muted: #64748B;
-  --text-light: #94A3B8;
+  --bg-subtle: #FFE4E6;
+  --border-color: #FECDD3;
+  --border-red: #F87171;
+  --text-main: #1F2937;
+  --text-muted: #6B7280;
+  --text-light: #9CA3AF;
+  --text-white: #FFFFFF;
+
+  /* Header & Navigation (Bold Red) */
+  --header-bg: linear-gradient(135deg, #B91C1C 0%, #DC2626 50%, #991B1B 100%);
+  --nav-bg: #881337;
+  --nav-text: rgba(255, 255, 255, 0.88);
+  --nav-active-bg: #FFFFFF;
+  --nav-active-text: #B91C1C;
 
   /* Status Colors */
   --color-success: #16A34A;
@@ -30,10 +42,10 @@
   --color-info-bg: #E0F2FE;
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-red: 0 4px 14px 0 rgba(211, 47, 47, 0.35);
+  --shadow-sm: 0 1px 3px 0 rgba(185, 28, 28, 0.1);
+  --shadow-md: 0 4px 10px -1px rgba(185, 28, 28, 0.15), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 12px 24px -4px rgba(185, 28, 28, 0.22), 0 4px 8px -2px rgba(0, 0, 0, 0.05);
+  --shadow-red: 0 6px 18px 0 rgba(220, 38, 38, 0.4);
 
   /* Radii */
   --radius-sm: 6px;
@@ -43,24 +55,31 @@
 
   /* Layout */
   --max-width: 1240px;
-  --header-height: 70px;
+  --header-height: 72px;
 }
 
-/* Night Mode (Dark Theme) */
+/* Red Night Mode (Deep Wine / Rich Crimson Dark Theme) */
 [data-theme="night"] {
-  --bg-main: #0F172A;
-  --bg-card: #1E293B;
-  --bg-subtle: #334155;
-  --border-color: #334155;
-  --text-main: #F8FAFC;
-  --text-muted: #94A3B8;
-  --text-light: #64748B;
+  --bg-main: #1A070B;
+  --bg-card: #2B0C14;
+  --bg-subtle: #3E101D;
+  --border-color: #5C1D2A;
+  --border-red: #E11D48;
+  --text-main: #FFF1F2;
+  --text-muted: #FDA4AF;
+  --text-light: #F43F5E;
 
-  --primary-red-light: rgba(229, 57, 53, 0.18);
-  --primary-red-border: rgba(229, 57, 53, 0.4);
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 20px -3px rgba(0, 0, 0, 0.5);
+  --primary-red-light: rgba(244, 63, 94, 0.18);
+  --primary-red-border: rgba(244, 63, 94, 0.4);
+  --header-bg: linear-gradient(135deg, #4C0519 0%, #881337 50%, #700B25 100%);
+  --nav-bg: #380714;
+  --nav-text: rgba(255, 255, 255, 0.88);
+  --nav-active-bg: #EF4444;
+  --nav-active-text: #FFFFFF;
+
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 12px -1px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 12px 26px -4px rgba(0, 0, 0, 0.7);
 }
 
 /* Base Reset */
@@ -105,12 +124,13 @@ button, input, select, textarea {
 .mt-2 { margin-top: 0.5rem; }
 .mt-3 { margin-top: 0.75rem; }
 .mt-4 { margin-top: 1rem; }
+.mb-1 { margin-bottom: 0.25rem; }
 .mb-2 { margin-bottom: 0.5rem; }
 .mb-3 { margin-bottom: 0.75rem; }
 .p-6 { padding: 1.5rem; }
 
 /* ==========================================================================
-   Welcome / Landing Screen ("Are you . . . ?")
+   Welcome / Landing Screen ("Are you . . . ?") - Dominantly RED
    ========================================================================== */
 
 .landing-overlay {
@@ -119,11 +139,21 @@ button, input, select, textarea {
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  background: linear-gradient(135deg, #FFF5F5 0%, #FFFFFF 50%, #FFEBEE 100%);
+  background: linear-gradient(135deg, #7F1D1D 0%, #991B1B 35%, #B91C1C 70%, #DC2626 100%);
+  position: relative;
+  overflow: hidden;
 }
 
-[data-theme="night"] .landing-overlay {
-  background: linear-gradient(135deg, #090D16 0%, #0F172A 50%, #1A0D11 100%);
+.landing-overlay::before {
+  content: "";
+  position: absolute;
+  top: -150px;
+  right: -150px;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .welcome-box {
@@ -131,12 +161,13 @@ button, input, select, textarea {
   max-width: 580px;
   background: var(--bg-card);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
   padding: 2.5rem;
-  border: 1px solid var(--border-color);
+  border: 3px solid var(--primary-red);
   text-align: center;
   position: relative;
   overflow: hidden;
+  z-index: 1;
 }
 
 .welcome-box::before {
@@ -145,28 +176,28 @@ button, input, select, textarea {
   top: 0;
   left: 0;
   right: 0;
-  height: 6px;
-  background: linear-gradient(90deg, #E53935, #FF5252, #B71C1C);
+  height: 8px;
+  background: linear-gradient(90deg, #DC2626, #EF4444, #F43F5E, #B91C1C);
 }
 
 .welcome-brand {
-  margin-bottom: 2rem;
+  margin-bottom: 1.75rem;
 }
 
 .brand-icon-big {
   font-size: 3.5rem;
   line-height: 1;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   animation: gentlePulse 2.5s infinite ease-in-out;
 }
 
 @keyframes gentlePulse {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.06); }
+  50% { transform: scale(1.08); }
 }
 
 .brand-title {
-  font-size: 2.25rem;
+  font-size: 2.3rem;
   font-weight: 800;
   color: var(--primary-red);
   letter-spacing: -0.5px;
@@ -174,24 +205,29 @@ button, input, select, textarea {
 
 .brand-tagline {
   color: var(--text-muted);
-  font-size: 1rem;
+  font-size: 0.95rem;
   margin-top: 0.25rem;
+  font-weight: 500;
 }
 
 .welcome-question-card {
-  margin-top: 1.5rem;
+  margin-top: 1.25rem;
 }
 
 .question-title {
   font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--primary-red-deep);
   margin-bottom: 0.25rem;
+}
+
+[data-theme="night"] .question-title {
+  color: #FDA4AF;
 }
 
 .question-subtitle {
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   margin-bottom: 1.5rem;
 }
 
@@ -206,21 +242,31 @@ button, input, select, textarea {
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  background: var(--bg-subtle);
-  border: 2px solid transparent;
+  background: var(--primary-red-subtle);
+  border: 2px solid var(--primary-red-border);
   border-radius: var(--radius-md);
   padding: 1.25rem;
   cursor: pointer;
   text-align: left;
-  transition: all 0.2s ease;
+  transition: all 0.22s ease;
   width: 100%;
 }
 
 .role-choice-card:hover {
   border-color: var(--primary-red);
-  background: var(--primary-red-light);
+  background: #FFE4E6;
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.2);
+}
+
+[data-theme="night"] .role-choice-card {
+  background: #3E101D;
+  border-color: #5C1D2A;
+}
+
+[data-theme="night"] .role-choice-card:hover {
+  background: #4C1424;
+  border-color: var(--accent-red);
 }
 
 .role-icon {
@@ -229,10 +275,14 @@ button, input, select, textarea {
 }
 
 .role-details h3 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--text-main);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--primary-red-dark);
   margin-bottom: 0.2rem;
+}
+
+[data-theme="night"] .role-details h3 {
+  color: #FFF1F2;
 }
 
 .role-details p {
@@ -243,7 +293,7 @@ button, input, select, textarea {
 
 .role-arrow {
   margin-left: auto;
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   color: var(--primary-red);
   font-weight: bold;
 }
@@ -253,7 +303,7 @@ button, input, select, textarea {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px dashed var(--primary-red-border);
   padding-top: 1rem;
 }
 
@@ -261,9 +311,9 @@ button, input, select, textarea {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 1.75rem;
+  margin-top: 1.5rem;
   padding-top: 1rem;
-  border-top: 1px dashed var(--border-color);
+  border-top: 1px dashed var(--primary-red-border);
 }
 
 .landing-lang-picker {
@@ -271,20 +321,22 @@ button, input, select, textarea {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.9rem;
+  font-weight: 600;
 }
 
 /* ==========================================================================
-   App Shell Header & Navigation
+   App Shell Header (Dominant Crimson Red with White Text & Accents)
    ========================================================================== */
 
 .app-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border-color);
+  background: var(--header-bg);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.15);
   height: var(--header-height);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 14px rgba(185, 28, 28, 0.25);
+  color: #FFFFFF;
 }
 
 .header-container {
@@ -306,26 +358,56 @@ button, input, select, textarea {
 }
 
 .header-logo-icon {
-  font-size: 1.8rem;
+  font-size: 1.9rem;
   line-height: 1;
 }
 
 .header-title-wrap h1 {
   font-size: 1.35rem;
   font-weight: 800;
-  color: var(--primary-red);
+  color: #FFFFFF;
   line-height: 1.1;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 .header-title-wrap .header-subtitle {
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 500;
 }
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.75rem;
+}
+
+/* Header buttons in White Outline / Semi-transparent */
+.header-right .btn-circle {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #FFFFFF;
+  transition: all 0.2s ease;
+}
+
+.header-right .btn-circle:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.lang-selector-header select {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #FFFFFF;
+  font-weight: 700;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.lang-selector-header select option {
+  background: var(--primary-red-deep);
+  color: #FFFFFF;
 }
 
 /* Notifications Button at Top Right Corner */
@@ -334,8 +416,8 @@ button, input, select, textarea {
 }
 
 .notif-btn {
-  background: var(--bg-subtle);
-  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   width: 42px;
   height: 42px;
   border-radius: var(--radius-full);
@@ -346,48 +428,83 @@ button, input, select, textarea {
   cursor: pointer;
   position: relative;
   transition: all 0.2s ease;
+  color: #FFFFFF;
 }
 
 .notif-btn:hover {
-  background: var(--primary-red-light);
-  border-color: var(--primary-red);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .notif-badge {
   position: absolute;
   top: -4px;
   right: -4px;
-  background: var(--primary-red);
-  color: #FFFFFF;
-  font-size: 0.7rem;
-  font-weight: 800;
-  min-width: 19px;
-  height: 19px;
+  background: #FFFFFF;
+  color: var(--primary-red);
+  font-size: 0.72rem;
+  font-weight: 900;
+  min-width: 20px;
+  height: 20px;
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 4px;
-  border: 2px solid var(--bg-card);
-  box-shadow: var(--shadow-sm);
+  border: 2px solid var(--primary-red);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-/* App Navigation Bar */
+/* User Profile Badge on Header */
+.user-profile-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  color: #FFFFFF;
+}
+
+.user-name-display {
+  color: #FFFFFF;
+}
+
+.user-avatar-small {
+  font-size: 1.15rem;
+}
+
+#sign-out-btn {
+  color: #FFFFFF !important;
+  font-weight: 900;
+  opacity: 0.85;
+}
+
+#sign-out-btn:hover {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   App Navigation Bar (Ruby Burgundy Bar with White Pills)
+   ========================================================================== */
+
 .app-nav-bar {
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border-color);
+  background: var(--nav-bg);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.15);
   position: sticky;
   top: var(--header-height);
   z-index: 90;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .nav-container {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 1.25rem;
+  padding: 0.35rem 1.25rem;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.85rem;
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -400,25 +517,29 @@ button, input, select, textarea {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.9rem 0.5rem;
+  padding: 0.6rem 1rem;
   font-weight: 600;
   font-size: 0.95rem;
-  color: var(--text-muted);
+  color: var(--nav-text);
   background: transparent;
-  border: none;
-  border-bottom: 3px solid transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .app-nav-item:hover {
-  color: var(--primary-red);
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .app-nav-item.active {
-  color: var(--primary-red);
-  border-bottom-color: var(--primary-red);
+  background: var(--nav-active-bg);
+  color: var(--nav-active-text);
+  font-weight: 800;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 /* Main Content Area */
@@ -428,20 +549,4 @@ button, input, select, textarea {
   margin: 0 auto;
   padding: 1.75rem 1.25rem 4rem;
   flex: 1;
-}
-
-/* User Profile Badge */
-.user-profile-chip {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.75rem;
-  background: var(--bg-subtle);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-full);
-  font-size: 0.85rem;
-}
-
-.user-avatar-small {
-  font-size: 1.15rem;
 }

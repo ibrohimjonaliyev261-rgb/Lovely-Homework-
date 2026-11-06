@@ -92,7 +92,7 @@ class App {
 
         <div class="welcome-question-card">
           <h2 class="question-title">${window.i18n.get('areYou')}</h2>
-          <p class="question-subtitle">Select your role to get started:</p>
+          <p class="question-subtitle">${window.i18n.get('selectRole') || 'Select your role to get started:'}</p>
 
           <div class="role-cards-grid">
             <!-- Option 1: Teacher -->
@@ -100,7 +100,7 @@ class App {
               <div class="role-icon">👨‍🏫</div>
               <div class="role-details">
                 <h3>${window.i18n.get('teacher')}</h3>
-                <p>Manage homework, upload video lessons, check student photos</p>
+                <p>Manage groups, assign homework, check photo submissions</p>
               </div>
               <div class="role-arrow">➜</div>
             </button>
@@ -110,27 +110,26 @@ class App {
               <div class="role-icon">🧑‍🎓</div>
               <div class="role-details">
                 <h3>${window.i18n.get('student')}</h3>
-                <p>Submit homework photos, mark oral readiness, watch cartoons</p>
+                <p>${window.i18n.get('studentLogin')}: Log in with your pre-assigned username</p>
               </div>
               <div class="role-arrow">➜</div>
             </button>
           </div>
 
           <div class="welcome-quick-login">
-            <span class="text-xs text-gray">Already have an active account?</span>
-            <button id="quick-login-toggle-btn" class="btn btn-sm btn-link">Log In with Existing Profile</button>
+            <span class="text-xs text-gray">Fast login with pre-assigned profile?</span>
+            <button id="quick-login-toggle-btn" class="btn btn-sm btn-link">⚡ Quick Profile Select</button>
           </div>
         </div>
 
-        <!-- Language & Theme switcher on landing -->
+        <!-- Language & Theme switcher on landing (Uzbek, Russian, English only) -->
         <div class="landing-footer-controls">
           <div class="landing-lang-picker">
             🌐
             <select id="landing-lang-select" class="form-control-sm">
               <option value="en" ${window.i18n.currentLang === 'en' ? 'selected' : ''}>English</option>
-              <option value="az" ${window.i18n.currentLang === 'az' ? 'selected' : ''}>Azərbaycan</option>
+              <option value="uz" ${window.i18n.currentLang === 'uz' ? 'selected' : ''}>O'zbekcha</option>
               <option value="ru" ${window.i18n.currentLang === 'ru' ? 'selected' : ''}>Русский</option>
-              <option value="tr" ${window.i18n.currentLang === 'tr' ? 'selected' : ''}>Türkçe</option>
             </select>
           </div>
 
@@ -147,7 +146,7 @@ class App {
     });
 
     container.querySelector('#choose-student-btn').addEventListener('click', () => {
-      this.showStudentRegistrationModal();
+      this.showStudentLoginModal();
     });
 
     container.querySelector('#quick-login-toggle-btn').addEventListener('click', () => {
@@ -165,7 +164,7 @@ class App {
     });
   }
 
-  // Teacher Password Modal: Must enter password "Aliyev"
+  // Teacher Password Modal: Must enter master password "Aliyev"
   showTeacherPasswordModal() {
     const modalId = 'teacher-password-modal';
     let modal = document.getElementById(modalId);
@@ -180,12 +179,12 @@ class App {
           </div>
           <form id="teacher-password-form" class="modal-body">
             <p class="text-sm text-gray mb-3">
-              Please enter the teacher master password to access the teacher dashboard.
+              Enter the teacher master password to access your teacher dashboard:
             </p>
 
             <div class="form-group">
-              <label>${window.i18n.get('emailLabel')}</label>
-              <input type="text" id="teacher-name-input" class="form-control" placeholder="e.g. Teacher name or email" required/>
+              <label>${window.i18n.get('nameLabel')}</label>
+              <input type="text" id="teacher-name-input" class="form-control" value="Mr. Aliyev" placeholder="Teacher name" required/>
             </div>
 
             <div class="form-group">
@@ -193,7 +192,7 @@ class App {
               <input type="password" id="teacher-pass-input" class="form-control" placeholder="••••••••" autofocus required/>
             </div>
 
-            <div id="teacher-login-error" class="error-msg hidden"></div>
+            <div id="teacher-login-error" class="error-msg hidden" style="color:var(--primary-red); font-size:0.85rem; margin-top:0.5rem; font-weight:600;"></div>
 
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary modal-close-btn">${window.i18n.get('cancel')}</button>
@@ -226,61 +225,72 @@ class App {
     });
   }
 
-  // Student Registration Modal:
-  // "Write their names, last names, their level (with options: Beginner, elementary, Pre-intermediate; Intermediate; IELTS Novice, IELTS Standard),
-  // they fill the questions; and tap the button 'Ready'; then see a message, please wait until your teacher confirms your request. then i will see the request, and accept it - good to go"
-  async showStudentRegistrationModal() {
-    const modalId = 'student-register-modal';
+  // Student Direct Login Modal (Pre-Created Accounts)
+  // Students simply log in with their pre-assigned username and password
+  async showStudentLoginModal(prefilledUsername = '') {
+    const modalId = 'student-login-modal';
     let modal = document.getElementById(modalId);
     if (modal) modal.remove();
 
     const allUsers = await window.appDB.getAll('users');
-    const teachers = allUsers.filter(u => u.role === 'teacher');
-
-    const levels = ['Beginner', 'Elementary', 'Pre-intermediate', 'Intermediate', 'IELTS Novice', 'IELTS Standard'];
+    const allGroups = await window.appDB.getAll('groups');
+    const students = allUsers.filter(u => u.role === 'student');
 
     const html = `
       <div id="${modalId}" class="modal-overlay">
         <div class="modal-content modal-md">
           <div class="modal-header">
-            <h3>🧑‍🎓 ${window.i18n.get('studentRegistration')}</h3>
+            <h3>🧑‍🎓 ${window.i18n.get('studentLogin')}</h3>
             <button class="modal-close-btn">&times;</button>
           </div>
-          <form id="student-register-form" class="modal-body">
-            <div class="form-row">
-              <div class="form-group col-half">
-                <label>${window.i18n.get('nameLabel')} *</label>
-                <input type="text" id="reg-firstname-input" class="form-control" required placeholder="e.g. Leyla"/>
+          <form id="student-login-form" class="modal-body">
+            <p class="text-sm text-gray mb-3">
+              ${window.i18n.get('studentLoginDesc') || 'Please enter the username and password provided by your teacher.'}
+            </p>
+
+            <div class="form-group">
+              <label>${window.i18n.get('usernameLabel')} *</label>
+              <input type="text" id="student-username-input" class="form-control" 
+                     placeholder="e.g. farid, leyla, or username" 
+                     value="${prefilledUsername}" 
+                     autocomplete="username" required autofocus/>
+            </div>
+
+            <div class="form-group">
+              <label>${window.i18n.get('enterPassword')} *</label>
+              <input type="password" id="student-pass-input" class="form-control" 
+                     placeholder="••••••••" 
+                     autocomplete="current-password" required/>
+            </div>
+
+            <div id="student-login-error" class="error-msg hidden" style="color:var(--primary-red); font-size:0.85rem; margin-top:0.5rem; font-weight:600;"></div>
+
+            <!-- Quick tap student list for convenience -->
+            ${students.length > 0 ? `
+              <div class="quick-student-chips-section mt-4 pt-3" style="border-top:1px dashed var(--border-color);">
+                <label class="text-xs font-bold block mb-2" style="color:var(--text-muted);">
+                  👇 Or tap your name from your group:
+                </label>
+                <div class="quick-student-chips-list" style="display:flex; flex-wrap:wrap; gap:0.4rem; max-height:130px; overflow-y:auto; padding:2px;">
+                  ${students.map(s => {
+                    const grp = allGroups.find(g => g.id === s.groupId);
+                    const grpName = grp ? grp.name : s.level;
+                    return `
+                      <button type="button" class="btn btn-sm btn-secondary chip-student-pick-btn" 
+                              data-username="${s.username || s.firstName?.toLowerCase()}"
+                              style="font-size:0.78rem; padding:3px 8px; border-radius:12px;">
+                        <span>🧑‍🎓</span> <strong>${s.firstName} ${s.lastName}</strong> (${grpName})
+                      </button>
+                    `;
+                  }).join('')}
+                </div>
               </div>
-              <div class="form-group col-half">
-                <label>${window.i18n.get('lastNameLabel')} *</label>
-                <input type="text" id="reg-lastname-input" class="form-control" required placeholder="e.g. Huseynova"/>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Student Email Address *</label>
-              <input type="email" id="reg-email-input" class="form-control" required placeholder="e.g. student@gmail.com"/>
-            </div>
-
-            <div class="form-group">
-              <label>${window.i18n.get('selectLevel')} *</label>
-              <select id="reg-level-select" class="form-control" required>
-                ${levels.map(lvl => `<option value="${lvl}">${lvl}</option>`).join('')}
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>${window.i18n.get('selectTeacher')} *</label>
-              <select id="reg-teacher-select" class="form-control">
-                ${teachers.map(t => `<option value="${t.id}">${t.firstName} ${t.lastName} (${t.email})</option>`).join('')}
-              </select>
-            </div>
+            ` : ''}
 
             <div class="modal-footer mt-4">
               <button type="button" class="btn btn-secondary modal-close-btn">${window.i18n.get('cancel')}</button>
-              <button type="submit" id="ready-submit-btn" class="btn btn-primary btn-ready-primary">
-                ${window.i18n.get('readyBtn')} (Ready) ✨
+              <button type="submit" class="btn btn-primary btn-ready-primary">
+                ${window.i18n.get('loginBtn')} 🚀
               </button>
             </div>
           </form>
@@ -293,75 +303,31 @@ class App {
 
     modal.querySelectorAll('.modal-close-btn').forEach(b => b.addEventListener('click', () => modal.remove()));
 
-    modal.querySelector('#student-register-form').addEventListener('submit', async (e) => {
+    // Tap on student chip
+    modal.querySelectorAll('.chip-student-pick-btn').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const u = chip.getAttribute('data-username');
+        const userInput = modal.querySelector('#student-username-input');
+        const passInput = modal.querySelector('#student-pass-input');
+        if (userInput) userInput.value = u;
+        if (passInput) passInput.focus();
+      });
+    });
+
+    modal.querySelector('#student-login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const firstName = modal.querySelector('#reg-firstname-input').value.trim();
-      const lastName = modal.querySelector('#reg-lastname-input').value.trim();
-      const email = modal.querySelector('#reg-email-input').value.trim();
-      const level = modal.querySelector('#reg-level-select').value;
-      const teacherId = modal.querySelector('#reg-teacher-select').value;
+      const username = modal.querySelector('#student-username-input').value.trim();
+      const pass = modal.querySelector('#student-pass-input').value.trim();
+      const errorDiv = modal.querySelector('#student-login-error');
 
       try {
-        const student = await window.authManager.registerStudent({
-          firstName,
-          lastName,
-          email,
-          level,
-          teacherId
-        });
-
+        const student = await window.authManager.loginStudent(username, pass);
         modal.remove();
-        // Show the exact pending confirmation screen
-        this.showPendingApprovalScreen(student);
+        window.showToast(`${window.i18n.get('welcomeBack')}, ${student.firstName}! 🧑‍🎓`);
       } catch (err) {
-        alert(err.message || 'Error submitting registration.');
+        errorDiv.textContent = err.message || window.i18n.get('studentLoginFailed');
+        errorDiv.classList.remove('hidden');
       }
-    });
-  }
-
-  // Pending Confirmation Screen:
-  // "then see a message, please wait until your teacher confirms your request. then i will see the request, and accept it - good to go"
-  showPendingApprovalScreen(student) {
-    const modalId = 'pending-confirmation-modal';
-    let modal = document.getElementById(modalId);
-    if (modal) modal.remove();
-
-    const html = `
-      <div id="${modalId}" class="modal-overlay">
-        <div class="modal-content modal-md text-center">
-          <div class="pending-icon-anim">⏳</div>
-          <h2 class="text-xl font-bold mt-2">${window.i18n.get('pendingApprovalTitle')}</h2>
-          
-          <div class="pending-notice-box mt-3">
-            <p class="font-bold text-red text-base">
-              ${window.i18n.get('pendingApprovalMsg')}
-            </p>
-            <p class="text-sm text-gray mt-2">
-              "${window.i18n.get('pendingSubtitle')}"
-            </p>
-          </div>
-
-          <div class="pending-details-box mt-3 text-left">
-            <div><strong>Student:</strong> ${student.firstName} ${student.lastName}</div>
-            <div><strong>Requested Level:</strong> ${student.level}</div>
-            <div><strong>Status:</strong> <span class="badge badge-warning">Awaiting Teacher Confirmation</span></div>
-          </div>
-
-          <div class="modal-footer justify-center mt-4">
-            <button type="button" id="pending-back-home-btn" class="btn btn-primary">
-              ${window.i18n.get('backToHome')}
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
-
-    document.body.insertAdjacentHTML('beforeend', html);
-    modal = document.getElementById(modalId);
-
-    modal.querySelector('#pending-back-home-btn').addEventListener('click', () => {
-      modal.remove();
-      this.renderLandingScreen();
     });
   }
 
@@ -372,6 +338,7 @@ class App {
     if (modal) modal.remove();
 
     const allUsers = await window.appDB.getAll('users');
+    const allGroups = await window.appDB.getAll('groups');
     const teachers = allUsers.filter(u => u.role === 'teacher');
     const students = allUsers.filter(u => u.role === 'student');
 
@@ -379,7 +346,7 @@ class App {
       <div id="${modalId}" class="modal-overlay">
         <div class="modal-content modal-md">
           <div class="modal-header">
-            <h3>🔑 Log In With Existing Account</h3>
+            <h3>⚡ Quick Account Selector</h3>
             <button class="modal-close-btn">&times;</button>
           </div>
           <div class="modal-body">
@@ -387,7 +354,7 @@ class App {
               <h4 class="font-bold text-red mb-2">👨‍🏫 Teachers:</h4>
               <div class="quick-user-grid">
                 ${teachers.map(t => `
-                  <button class="quick-user-btn" data-id="${t.id}">
+                  <button class="quick-user-btn" data-id="${t.id}" data-role="teacher">
                     <span class="user-avatar">${t.avatar || '👨‍🏫'}</span>
                     <span class="user-name">${t.firstName} ${t.lastName}</span>
                     <span class="text-xs text-gray">Teacher</span>
@@ -397,17 +364,19 @@ class App {
             </div>
 
             <div class="quick-user-section mt-4">
-              <h4 class="font-bold text-red mb-2">🧑‍🎓 Registered Students:</h4>
+              <h4 class="font-bold text-red mb-2">🧑‍🎓 Pre-Created Students:</h4>
               <div class="quick-user-grid">
-                ${students.map(s => `
-                  <button class="quick-user-btn ${s.status === 'pending' ? 'btn-disabled' : ''}" data-id="${s.id}" data-status="${s.status}">
-                    <span class="user-avatar">${s.avatar || '🧑‍🎓'}</span>
-                    <span class="user-name">${s.firstName} ${s.lastName}</span>
-                    <span class="text-xs ${s.status === 'pending' ? 'text-warning' : 'text-gray'}">
-                      ${s.status === 'pending' ? '⏳ Pending Approval' : s.level}
-                    </span>
-                  </button>
-                `).join('')}
+                ${students.map(s => {
+                  const grp = allGroups.find(g => g.id === s.groupId);
+                  const grpLabel = grp ? `${grp.name} (${grp.level})` : s.level;
+                  return `
+                    <button class="quick-user-btn" data-id="${s.id}" data-role="student" data-username="${s.username}">
+                      <span class="user-avatar">${s.avatar || '🧑‍🎓'}</span>
+                      <span class="user-name">${s.firstName} ${s.lastName}</span>
+                      <span class="text-xs text-gray">${grpLabel}</span>
+                    </button>
+                  `;
+                }).join('')}
               </div>
             </div>
           </div>
@@ -424,13 +393,15 @@ class App {
     modal.querySelectorAll('.quick-user-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id');
-        const status = btn.getAttribute('data-status');
-        if (status === 'pending') {
-          alert(window.i18n.get('pendingApprovalMsg'));
-          return;
-        }
-        await window.authManager.switchUser(id);
+        const role = btn.getAttribute('data-role');
+        const username = btn.getAttribute('data-username');
         modal.remove();
+
+        if (role === 'teacher') {
+          this.showTeacherPasswordModal();
+        } else {
+          this.showStudentLoginModal(username);
+        }
       });
     });
 

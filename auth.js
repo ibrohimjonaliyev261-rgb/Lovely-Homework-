@@ -1,7 +1,18 @@
 // Lovely Homework! - Authentication & Profile Management
-// Handles Teacher Master Password ("Aliyev"), Student Registration, Approvals, Session Persistence
+// Handles Teacher Master Password ("Aliyev"), Pre-Created Student Accounts (Username/Password),
+// Group Management, Group Graduation, and Session Persistence.
 
 const TEACHER_MASTER_PASSWORD = 'Aliyev';
+
+const LEVEL_ORDER = [
+  'Beginner',
+  'Elementary',
+  'Pre-intermediate',
+  'Intermediate',
+  'IELTS Novice',
+  'IELTS Standard',
+  'Graduated'
+];
 
 class AuthManager {
   constructor() {
@@ -36,13 +47,11 @@ class AuthManager {
   }
 
   async verifyTeacherPassword(password) {
-    // Trim and check
     return (password || '').trim() === TEACHER_MASTER_PASSWORD;
   }
 
-  // Teacher login or creation
+  // Teacher login
   async loginTeacher(emailOrName, password) {
-    // If master password provided, look up teacher or authenticate
     const isMaster = await this.verifyTeacherPassword(password);
     if (!isMaster) {
       throw new Error(window.i18n.get('passwordWrong'));
@@ -52,19 +61,20 @@ class AuthManager {
     const teachers = allUsers.filter(u => u.role === 'teacher');
 
     let teacher = teachers.find(t => 
+      t.username?.toLowerCase() === emailOrName?.toLowerCase() ||
       t.email?.toLowerCase() === emailOrName?.toLowerCase() ||
       t.firstName?.toLowerCase() === emailOrName?.toLowerCase()
     );
 
-    // If teacher doesn't exist yet but master password is correct, create new teacher profile
     if (!teacher) {
       const id = 'teacher_' + Date.now();
       teacher = {
         id,
         role: 'teacher',
-        firstName: emailOrName || 'Teacher',
-        lastName: '',
-        email: emailOrName?.includes('@') ? emailOrName : `${emailOrName.toLowerCase().replace(/\s+/g, '')}@lovelyhomework.com`,
+        firstName: emailOrName || 'Mr. Aliyev',
+        lastName: 'Teacher',
+        username: (emailOrName || 'aliyev').toLowerCase().replace(/\s+/g, ''),
+        email: emailOrName?.includes('@') ? emailOrName : `${(emailOrName || 'teacher').toLowerCase().replace(/\s+/g, '')}@lovelyhomework.com`,
         password: TEACHER_MASTER_PASSWORD,
         status: 'active',
         avatar: '👨‍🏫',
@@ -79,74 +89,31 @@ class AuthManager {
     return teacher;
   }
 
-  // Student registration with pending status
-  async registerStudent({ firstName, lastName, email, level, teacherId, password }) {
-    if (!firstName || !lastName || !level) {
-      throw new Error('Please fill all required fields');
+  // Student login directly by username and password (pre-created accounts)
+  async loginStudent(username, password) {
+    if (!username || !password) {
+      throw new Error(window.i18n.get('studentLoginFailed'));
     }
 
-    const id = 'student_' + Date.now();
-    const cleanEmail = email ? email.trim().toLowerCase() : `${firstName.trim().toLowerCase()}_${Date.now().toString().slice(-4)}@student.com`;
-    const studentUser = {
-      id,
-      role: 'student',
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      email: cleanEmail,
-      password: password || '123456',
-      level,
-      teacherId: teacherId || 'teacher_aliyev',
-      status: 'pending', // Pending teacher approval!
-      avatar: '🧑‍🎓',
-      createdAt: new Date().toISOString()
-    };
+    const cleanUser = username.trim().toLowerCase();
+    const cleanPass = password.trim();
 
-    await window.appDB.put('users', studentUser);
-
-    // Notify the teacher! (Both to specific teacher ID and generic 'teacher')
-    const notif = {
-      id: 'notif_reg_' + Date.now(),
-      recipientId: studentUser.teacherId || 'teacher',
-      title: 'New Student Registration Pending 🔔',
-      message: `${studentUser.firstName} ${studentUser.lastName} (${studentUser.email}) requested to join ${studentUser.level} level.`,
-      type: 'registration',
-      targetLevel: studentUser.level,
-      targetItemId: studentUser.id,
-      isRead: false,
-      createdAt: new Date().toISOString()
-    };
-    await window.appDB.put('notifications', notif);
-
-    // Broadcast change to other tabs & refresh notifications immediately
-    if (window.notifManager) {
-      window.notifManager.broadcastChange('student_registration', { student: studentUser, notif });
-      window.notifManager.update();
-    }
-
-    return studentUser;
-  }
-
-  // Student login
-  async loginStudent(studentIdOrName) {
     const allUsers = await window.appDB.getAll('users');
     const student = allUsers.find(u => 
       u.role === 'student' && 
-      (u.id === studentIdOrName || 
-       u.email?.toLowerCase() === studentIdOrName?.toLowerCase() ||
-       `${u.firstName} ${u.lastName}`.toLowerCase() === studentIdOrName?.toLowerCase() ||
-       u.firstName?.toLowerCase() === studentIdOrName?.toLowerCase())
+      (u.username?.toLowerCase() === cleanUser || 
+       u.email?.toLowerCase() === cleanUser ||
+       `${u.firstName} ${u.lastName}`.toLowerCase() === cleanUser ||
+       u.firstName?.toLowerCase() === cleanUser)
     );
 
     if (!student) {
-      throw new Error('Student not found. Please check your name or register.');
+      throw new Error(window.i18n.get('studentLoginFailed'));
     }
 
-    if (student.status === 'pending') {
-      throw new Error(window.i18n.get('pendingApprovalMsg'));
-    }
-
-    if (student.status === 'rejected') {
-      throw new Error('Your registration request was not approved. Please contact your teacher.');
+    // Verify password
+    if (student.password !== cleanPass) {
+      throw new Error(window.i18n.get('studentLoginFailed'));
     }
 
     this.currentUser = student;
@@ -155,7 +122,7 @@ class AuthManager {
     return student;
   }
 
-  // Direct login as any user (helpful for quick switching)
+  // Switch to another active user
   async switchUser(userId) {
     const user = await window.appDB.get('users', userId);
     if (user && user.status === 'active') {
@@ -166,89 +133,204 @@ class AuthManager {
     }
   }
 
-  // Approve student request (Teacher action)
-  async approveStudent(studentId) {
-    const student = await window.appDB.get('users', studentId);
-    if (!student) return;
+  // Teacher creates a pre-assigned student profile
+  async createStudent({ firstName, lastName, username, password, groupId, level }) {
+    if (!firstName || !lastName || !username) {
+      throw new Error('Please fill First Name, Last Name, and Username');
+    }
 
-    student.status = 'active';
-    await window.appDB.put('users', student);
+    const cleanUser = username.trim().toLowerCase();
+    const allUsers = await window.appDB.getAll('users');
+    const exists = allUsers.find(u => u.username?.toLowerCase() === cleanUser);
+    if (exists) {
+      throw new Error(`Username "${cleanUser}" is already taken. Please choose another username.`);
+    }
 
-    // Send confirmation notification to the student
-    const notif = {
-      id: 'notif_approved_' + Date.now(),
-      recipientId: student.id,
-      title: 'Registration Approved! 🎉',
-      message: `Your teacher ${this.currentUser?.firstName || 'Teacher'} has accepted your request for ${student.level} level. Welcome!`,
-      type: 'registration',
-      targetLevel: student.level,
-      targetItemId: student.id,
-      isRead: false,
+    let resolvedLevel = level;
+    if (groupId) {
+      const grp = await window.appDB.get('groups', groupId);
+      if (grp && grp.level) {
+        resolvedLevel = grp.level;
+      }
+    }
+
+    const newStudent = {
+      id: 'student_' + Date.now(),
+      role: 'student',
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      username: cleanUser,
+      password: (password || '12345').trim(),
+      groupId: groupId || null,
+      level: resolvedLevel || 'Beginner',
+      teacherId: this.currentUser?.id || 'teacher_aliyev',
+      status: 'active',
+      avatar: '🧑‍🎓',
       createdAt: new Date().toISOString()
     };
-    await window.appDB.put('notifications', notif);
+
+    await window.appDB.put('users', newStudent);
 
     if (window.notifManager) {
-      window.notifManager.broadcastChange('student_approved', { studentId });
+      window.notifManager.broadcastChange('student_created', { student: newStudent });
       window.notifManager.update();
     }
+
+    return newStudent;
   }
 
-  // Reject student request (Teacher action)
-  async rejectStudent(studentId) {
+  // Teacher updates student profile
+  async updateStudent(studentId, { firstName, lastName, username, password, groupId, level }) {
     const student = await window.appDB.get('users', studentId);
     if (!student) return;
 
-    student.status = 'rejected';
+    if (firstName) student.firstName = firstName.trim();
+    if (lastName) student.lastName = lastName.trim();
+    if (username) student.username = username.trim().toLowerCase();
+    if (password) student.password = password.trim();
+    if (groupId !== undefined) student.groupId = groupId;
+
+    if (groupId) {
+      const grp = await window.appDB.get('groups', groupId);
+      if (grp && grp.level) {
+        student.level = grp.level;
+      }
+    } else if (level) {
+      student.level = level;
+    }
+
     await window.appDB.put('users', student);
 
     if (window.notifManager) {
-      window.notifManager.broadcastChange('student_rejected', { studentId });
+      window.notifManager.broadcastChange('student_updated', { student });
       window.notifManager.update();
     }
   }
 
-  // Promote / Graduate student group (Teacher action)
-  async graduateGroup(level) {
-    const LEVEL_ORDER = [
-      'Beginner',
-      'Elementary',
-      'Pre-intermediate',
-      'Intermediate',
-      'IELTS Novice',
-      'IELTS Standard',
-      'Graduated'
-    ];
+  // Teacher deletes a student
+  async deleteStudent(studentId) {
+    await window.appDB.delete('users', studentId);
+    if (window.notifManager) {
+      window.notifManager.broadcastChange('student_deleted', { studentId });
+      window.notifManager.update();
+    }
+  }
 
-    const currentIndex = LEVEL_ORDER.indexOf(level);
-    if (currentIndex === -1 || currentIndex >= LEVEL_ORDER.length - 1) {
-      return false;
+  // Teacher creates a new Group
+  async createGroup({ name, level }) {
+    if (!name || !level) {
+      throw new Error('Please enter Group Name and Level');
     }
 
-    const nextLevel = LEVEL_ORDER[currentIndex + 1];
+    const newGroup = {
+      id: 'group_' + Date.now(),
+      name: name.trim(),
+      level: level,
+      teacherId: this.currentUser?.id || 'teacher_aliyev',
+      createdAt: new Date().toISOString()
+    };
+
+    await window.appDB.put('groups', newGroup);
+
+    if (window.notifManager) {
+      window.notifManager.broadcastChange('group_created', { group: newGroup });
+      window.notifManager.update();
+    }
+
+    return newGroup;
+  }
+
+  // Teacher updates Group Name and/or Level
+  async updateGroup(groupId, { name, level }) {
+    const group = await window.appDB.get('groups', groupId);
+    if (!group) return;
+
+    const oldLevel = group.level;
+    if (name) group.name = name.trim();
+    if (level) group.level = level;
+
+    await window.appDB.put('groups', group);
+
+    // If level changed, update all students in this group!
+    if (level && level !== oldLevel) {
+      const allUsers = await window.appDB.getAll('users');
+      const groupStudents = allUsers.filter(u => u.role === 'student' && u.groupId === groupId);
+      for (const st of groupStudents) {
+        st.level = level;
+        await window.appDB.put('users', st);
+      }
+    }
+
+    if (window.notifManager) {
+      window.notifManager.broadcastChange('group_updated', { group });
+      window.notifManager.update();
+    }
+  }
+
+  // Graduate a group to the next level (or selected level)
+  async graduateGroup(groupId, targetLevel = null) {
+    const group = await window.appDB.get('groups', groupId);
+    if (!group) return false;
+
+    let nextLevel = targetLevel;
+    if (!nextLevel) {
+      const currentIndex = LEVEL_ORDER.indexOf(group.level);
+      if (currentIndex === -1 || currentIndex >= LEVEL_ORDER.length - 1) {
+        return false;
+      }
+      nextLevel = LEVEL_ORDER[currentIndex + 1];
+    }
+
+    const oldLevel = group.level;
+    group.level = nextLevel;
+    await window.appDB.put('groups', group);
+
+    // Update all students in this group
     const allUsers = await window.appDB.getAll('users');
-    const groupStudents = allUsers.filter(u => u.role === 'student' && u.level === level && u.status === 'active');
+    const groupStudents = allUsers.filter(u => u.role === 'student' && u.groupId === groupId);
 
-    for (const student of groupStudents) {
-      student.level = nextLevel;
-      await window.appDB.put('users', student);
+    for (const st of groupStudents) {
+      st.level = nextLevel;
+      await window.appDB.put('users', st);
 
-      // Notification
+      // Send graduation notification to the student
       const notif = {
-        id: 'notif_grad_' + Date.now() + '_' + student.id,
-        recipientId: student.id,
-        title: '🎉 Group Graduation!',
-        message: `Congratulations! Your teacher has graduated your group from ${level} to ${nextLevel}!`,
+        id: 'notif_grad_' + Date.now() + '_' + st.id,
+        recipientId: st.id,
+        title: '🎉 Group Promoted!',
+        message: `Congratulations! Your group "${group.name}" has advanced from ${oldLevel} to ${nextLevel}!`,
         type: 'graduation',
         targetLevel: nextLevel,
-        targetItemId: student.id,
+        targetItemId: st.id,
         isRead: false,
         createdAt: new Date().toISOString()
       };
       await window.appDB.put('notifications', notif);
     }
 
-    return { nextLevel, count: groupStudents.length };
+    if (window.notifManager) {
+      window.notifManager.broadcastChange('group_graduated', { groupId, nextLevel, count: groupStudents.length });
+      window.notifManager.update();
+    }
+
+    return { group, nextLevel, count: groupStudents.length };
+  }
+
+  // Delete a Group
+  async deleteGroup(groupId) {
+    await window.appDB.delete('groups', groupId);
+    // Unassign students from this group
+    const allUsers = await window.appDB.getAll('users');
+    const groupStudents = allUsers.filter(u => u.role === 'student' && u.groupId === groupId);
+    for (const st of groupStudents) {
+      st.groupId = null;
+      await window.appDB.put('users', st);
+    }
+
+    if (window.notifManager) {
+      window.notifManager.broadcastChange('group_deleted', { groupId });
+      window.notifManager.update();
+    }
   }
 
   async logout() {

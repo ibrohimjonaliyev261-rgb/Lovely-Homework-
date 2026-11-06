@@ -1297,3 +1297,201 @@
   color: var(--text-muted);
   font-size: 0.95rem;
 }
+
+/* ==========================================================================
+   Groups & Student Roster Hub Styles (Red & White Theme)
+   ========================================================================== */
+
+.roster-tabs-container {
+  display: flex;
+  gap: 0.75rem;
+  margin: 1.25rem 0 1.5rem;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.roster-tab-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 0.65rem 1.4rem;
+  border-radius: var(--radius-full);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.roster-tab-btn:hover {
+  border-color: var(--primary-red);
+  color: var(--primary-red);
+}
+
+.roster-tab-btn.active {
+  background: var(--primary-red);
+  color: #FFFFFF;
+  border-color: var(--primary-red);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+}
+
+/* Groups Grid & Card */
+.groups-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 1.5rem;
+}
+
+.group-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-top: 5px solid var(--primary-red);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.22s ease;
+}
+
+.group-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-red);
+}
+
+.group-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.group-name-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--primary-red-deep);
+  margin-bottom: 0.35rem;
+}
+
+[data-theme="night"] .group-name-title {
+  color: #FFF1F2;
+}
+
+.group-level-badge {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.group-actions {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.group-students-section {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--border-color);
+  flex: 1;
+}
+
+.group-students-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.group-students-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.group-student-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  background: var(--primary-red-subtle);
+  border: 1px solid var(--primary-red-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+}
+
+[data-theme="night"] .group-student-item {
+  background: #3E101D;
+  border-color: #5C1D2A;
+}
+
+.st-credentials-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: monospace;
+  font-size: 0.78rem;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.password-chip {
+  background: #FFFFFF;
+  color: var(--primary-red);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 700;
+  border: 1px solid var(--primary-red-border);
+}
+
+[data-theme="night"] .password-chip {
+  background: #2B0C14;
+  color: #FDA4AF;
+}
+
+/* Roster Table */
+.roster-table-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-top: 4px solid var(--primary-red);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.roster-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.roster-table th, .roster-table td {
+  padding: 0.9rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9rem;
+}
+
+.roster-table th {
+  background: var(--bg-subtle);
+  font-weight: 800;
+  color: var(--primary-red-dark);
+}
+
+[data-theme="night"] .roster-table th {
+  color: #FDA4AF;
+}
+
+.roster-table tr:hover td {
+  background: var(--primary-red-subtle);
+}
+
+[data-theme="night"] .roster-table tr:hover td {
+  background: #3E101D;
+}

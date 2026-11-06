@@ -1,47 +1,48 @@
 # Lovely Homework! 📚❤️
 
-**Lovely Homework!** is an educational web application and Progressive Web App (PWA) designed for teachers and students. It allows teachers to assign homework, inspect students' handwritten notebook photos, manage oral preparation ("I am ready" / "I am not ready"), share level-specific learning materials and video lessons, and host an entertaining **Fun Time** cinema with synchronized subtitles and gesture controls.
+**Lovely Homework!** is an educational web application and Progressive Web App (PWA) designed for teachers and students. It allows teachers to create and manage student groups, assign pre-created student accounts with simple passwords, assign homework with photos, review students' handwritten notebook photos, manage oral preparation ("I am ready" / "I am not ready"), share level-specific learning materials and video lessons, and host an entertaining **Fun Time** cinema with synchronized subtitles and gesture controls.
 
-Concentrated on a clean **Red and White** aesthetic with full **Night Mode** and **4-Language Support** (English, Azerbaijani, Russian, Turkish).
+Featuring a bold **Dominantly RED with clean WHITE accents** aesthetic, full **Night Mode**, and **3-Language Support** (English 🇬🇧, O'zbekcha 🇺🇿, Русский 🇷🇺).
 
 ---
 
-## 🌟 Key Features
+## 🌟 Key Updates & Features
 
-### 1. 👥 Two Roles: Teacher & Student
-- **Role Selection on Welcome**: Asks *"Are you . . . ?"* with choices for **Teacher** and **Student**.
-- **Teacher Master Access**: Protected by the secret master password: **`Aliyev`** (kept confidential with zero hints in the student registration UI). Multiple teachers can register and manage their own groups!
-- **Student Registration & Real-Time Confirmation Flow**:
-  - Student enters First Name, Last Name, **Email Address**, Level (*Beginner, Elementary, Pre-intermediate, Intermediate, IELTS Novice, IELTS Standard*), and selects their teacher.
-  - Taps **'Ready'**.
-  - Sees message: *"Please wait until your teacher confirms your request."*
-  - The teacher receives an immediate notification alert (via top bell icon and **Students & Groups** tab badge) with **Accept** and **Reject** buttons. Once accepted, the student is good to go!
+### 1. 📋 Pre-Created Accounts (Teacher-Managed Roster)
+- **Zero Registration Hassle**: Students do not need to self-register or wait for approval queues!
+- **Teacher Dashboard Roster**:
+  - The teacher creates student profiles directly from the **"Students & Groups"** tab.
+  - The teacher specifies: First Name, Last Name, Username, Default Password (e.g., `12345`), Level, and Group.
+  - A convenient **"📋 Copy Credentials"** button lets the teacher instantly copy logins to send to students or parents via Telegram, WhatsApp, or SMS.
+- **Direct Student Login**:
+  - Students open the app, tap **Student**, enter their pre-assigned Username and Password, and get instant access.
+  - Alternatively, students can tap their name from the quick student chip list on shared devices.
 
-### 2. 🎓 6 Levels & Automatic Group Graduation
-- **Levels**:
-  1. Beginner
-  2. Elementary
-  3. Pre-intermediate
-  4. Intermediate
-  5. IELTS Novice
-  6. IELTS Standard
-- Homework and Materials are separated per level.
-- **Group Graduation**: Teachers can click **"Graduate the group"** at any level, automatically promoting all active students in that group to the next level!
+### 2. 👥 Group Management & Level Graduation
+- **Create Named Groups**: Organize students into classes (e.g. *"Morning Elementary-1"*, *"IELTS Champions"*, *"Evening Intermediate"*).
+- **Assigned Levels**: Each group has a designated level (*Beginner, Elementary, Pre-intermediate, Intermediate, IELTS Novice, IELTS Standard*).
+- **Group Level Change & Graduation**:
+  - When students master a level, the teacher clicks **"Graduate / Change Level"** on the group card.
+  - Selecting the new level automatically promotes and updates **all enrolled students** in that group at once!
 
-### 3. 📝 Homework Management
+### 3. 👨‍🏫 Teacher Secret Master Access
+- **Confidential Password**: Protected by the master password **`Aliyev`**.
+- Kept strictly secret with **zero password hints** shown anywhere in the interface.
+
+### 4. 📝 Homework Management
 - **Two Homework Types**:
   - 📄 **Written on Paper**: Students take photos of their handwritten notebooks/workbooks and upload them. Teachers can view high-resolution photos with zoom/lightbox and add feedback/grades.
-  - 🗣️ **Oral**: For speaking topics and learning new vocabulary. Students have two clear interactive buttons: **"I am ready"** and **"I am not ready"**. Teachers can see live status breakdowns in their dashboard.
-- **Teacher Photo Attachments**: Teachers can attach textbook page photos and exercises so students can see them when doing their homework.
-- **Deadline Tracker**: Set due dates with warning tags for overdue tasks.
+  - 🗣️ **Oral**: For speaking topics and learning new vocabulary. Students have two clear interactive buttons: **"I am ready"** and **"I am not ready"**. Teachers see live status breakdowns in their review dashboard.
+- **Teacher Photo Attachments**: Teachers can attach textbook exercises or photos so students see them when completing tasks.
+- **Deadlines**: Automatic due date tracking with tags for upcoming and past-due tasks.
 
-### 4. 📚 Materials / Video Lessons
+### 5. 📚 Materials / Video Lessons
 - Organized per level.
 - Supports **PDFs, Word documents (.docx), Video lessons (.mp4 / streaming links), Infographics, and Audio**.
-- Teacher gives each material a name (e.g. *"Future Simple or Past simple"*).
+- Teacher names each material (e.g. *"Future Simple or Past simple"*).
 - **Read-Only for Students**: Students can view, read, and stream materials without editing or modifying them.
 
-### 5. 🍿 Fun Time (Movies, Cartoons, TV Series)
+### 6. 🍿 Fun Time (Movies, Cartoons, TV Series)
 - Shared across all levels!
 - 3 choices:
   - 🎬 **Movies**
@@ -56,90 +57,107 @@ Concentrated on a clean **Red and White** aesthetic with full **Night Mode** and
     - Double-tap right side of the screen ➔ **Fast-forwards 10 seconds (+10s)** with visual ripple!
   - Keyboard shortcuts: `Space` (Play/Pause), `Left/Right Arrow` (10s seek), `C` (Subtitles toggle), `F` (Fullscreen).
 
-### 6. 🔔 Real-Time Notifications & Multi-Tab Synchronization
-- Positioned in the top right corner of the header with an active unread badge.
-- Automatically notifies students when new homework, materials, or movies are uploaded.
-- Automatically notifies teachers via live sound/visual alert when students register or submit work.
-- Includes inter-tab **`BroadcastChannel`** and automated 2.5-second background polling so open teacher tabs update immediately without requiring manual page refresh!
+### 7. 🔔 Notifications System
+- Positioned in the top right corner with an unread badge.
+- Alerts students when new homework, materials, or movies are added.
+- Alerts teachers when students submit homework photos or mark oral readiness.
 
-### 7. 🎨 Theming & Internationalization
-- **Red & White Palette**: Vibrant crimson red (`#D32F2F`), warm rose backgrounds, and crisp white cards.
-- **Night Mode Toggle**: Dark charcoal/slate theme with red accents.
-- **Languages**: English 🇬🇧, Azərbaycan dili 🇦🇿, Русский 🇷🇺, Türkçe 🇹🇷.
+### 8. 🎨 Dominantly RED & White Design
+- **Primary Color**: Bold Crimson & Ruby Red (`#DC2626`, `#B91C1C`, `#881337`).
+- **Clean Accents**: Crisp white cards, badges, and high-contrast text.
+- **Red Night Mode**: Deep maroon/wine canvas with bright ruby accents.
+- **Supported Languages**:
+  - 🇬🇧 **English** (`en`)
+  - 🇺🇿 **O'zbekcha** (`uz`)
+  - 🇷🇺 **Русский** (`ru`)
 
 ---
 
 ## 📁 Repository Structure (Flat Root Layout)
 
-All files are organized directly in the root directory so they deploy seamlessly to GitHub Pages with zero folder mapping issues:
+All files sit directly in the root directory for flawless deployment on GitHub Pages without subfolder 404 errors:
 
 ```
 index.html         # Main app shell & router
-main.css           # Core theme (Red & White, Night mode, header)
-components.css     # Buttons, modals, cards, badges, lightboxes
+main.css           # Dominantly RED & white theme, header, nav
+components.css     # Buttons, modals, cards, badges, roster styles
 player.css         # Custom cinema player & -10s/+10s gesture animations
 responsive.css     # Mobile & tablet responsiveness
-app.js             # Main bootstrap, navigation & routing
-auth.js            # Roles, secret password verification, student approvals
-db.js              # IndexedDB high-capacity local database
+app.js             # Bootstrap, routing, secret teacher & student login
+auth.js            # Teacher master password, student & group roster logic
+db.js              # IndexedDB high-capacity local database (v2 with groups)
 homework.js        # Written photo uploads, oral ready/not ready status
 materials.js       # Video lessons & study documents per level
 funtime.js         # Movies, cartoons, TV series with subtitles
-students.js        # Student list, pending request approvals, graduation
-notifications.js   # Real-time notification & multi-tab sync system
-seed-data.js       # Pre-loaded demo accounts & exercises
+students.js        # Groups & Students Roster Hub (Create groups, add students, graduate)
+notifications.js   # Notification system & multi-tab sync
+i18n.js            # English, Uzbek, and Russian translations
+seed-data.js       # Pre-loaded default groups, student accounts & homework
 manifest.json      # Progressive Web App manifest
 sw.js              # Service Worker offline caching
-icon.svg           # High-resolution vector icon
+icon.svg           # Vector icon
 icon-192.png       # App icon (192x192)
 icon-512.png       # App icon (512x512)
-README.md          # Complete documentation & guide
+README.md          # Documentation & step-by-step instructions
 .gitignore         # Git ignore rules
 ```
 
 ---
 
-## 🚀 How to Update Your GitHub Repository (Step-by-Step)
+## 🚀 Step-by-Step Instructions: What to Do Next
 
-Because all files are now located directly in the root folder, updating your GitHub repository is super simple:
+Follow these exact steps to update your site on GitHub:
 
-### Step 1: Open Your GitHub Repository
-1. Go to your repository on [github.com](https://github.com) (e.g. `https://github.com/<your-username>/lovely-homework`).
+### Step 1: Open Your GitHub Repository in Your Browser
+1. Go to your repository on [github.com](https://github.com) (e.g. `https://github.com/ibrohimjonaliyev261-rgb/Lovely-Homework`).
 
 ### Step 2: Upload the Updated Files
-1. Click the **"Add file"** dropdown button near the top right of the file list.
-2. Select **"Upload files"**.
-3. Select or drag all the files from your local folder (`d:\CODES\Lovely Homework`):
+1. In your repository on GitHub, click the **"Add file"** button at the top-right of the file list and select **"Upload files"**.
+2. Open your local project folder: `d:\CODES\Lovely Homework\`.
+3. Select and drag all the files from `d:\CODES\Lovely Homework\` into the upload area:
    - `index.html`
-   - `app.js`, `auth.js`, `db.js`, `homework.js`, `materials.js`, `funtime.js`, `students.js`, `notifications.js`, `i18n.js`, `seed-data.js`
    - `main.css`, `components.css`, `player.css`, `responsive.css`
+   - `app.js`, `auth.js`, `db.js`, `students.js`, `homework.js`, `materials.js`, `funtime.js`, `notifications.js`, `i18n.js`, `seed-data.js`
    - `manifest.json`, `sw.js`
    - `icon.svg`, `icon-192.png`, `icon-512.png`
    - `README.md`
-4. Type a commit message (e.g. *"Fix root paths, secret teacher password, and real-time student notification"*).
-5. Click **"Commit changes"**.
+4. In the "Commit changes" box at the bottom, type:
+   `Red theme, pre-created student accounts, group management, and UZ/RU/EN languages`
+5. Click the green **"Commit changes"** button.
 
-### Step 3: Verify GitHub Pages
-1. In your repository, click **Settings** ➔ **Pages** (left sidebar).
-2. Ensure **Branch** is set to `main` (or `master`) and folder is `/(root)`.
-3. GitHub Pages will rebuild automatically within ~30 seconds.
-4. Refresh your live URL!
-
----
-
-## 📱 How to Install as an App (PWA)
-
-- **On iPhone / iPad**: Open your site link in **Safari**, tap the **Share** button ➔ tap **"Add to Home Screen"**.
-- **On Android**: Open in **Google Chrome**, tap the three dots or prompt ➔ tap **"Install App"** / **"Add to Home screen"**.
-- **On Windows / Mac**: Open in Chrome/Edge and click the **Install** button in the address bar.
+### Step 3: Wait ~30 Seconds for GitHub Pages to Build
+1. GitHub Pages builds your updated website automatically within 30 to 60 seconds.
+2. Open your GitHub Pages link on your computer or phone!
 
 ---
 
-## 🔑 Login Credentials
+## 🔑 Default Login Credentials
 
-| Role | Username / Identifier | Password | Details |
-|---|---|---|---|
-| **Teacher** | `Mr. Aliyev` (or any teacher name) | **`Aliyev`** | Secret master password |
-| **Student (Demo 1)** | `Leyla` | `123` | Elementary (Photo submitted + Ready oral) |
-| **Student (Demo 2)** | `Rashad` | `123` | Elementary (Not ready oral) |
-| **Student (Demo 3)** | `Kamran` | `123` | Pending approval (Ready for teacher confirmation) |
+### Teacher Account
+- Click **Teacher** on the welcome screen.
+- Password: **`Aliyev`** (secret master password).
+
+### Default Pre-Created Student Accounts
+Each default student is pre-assigned to a group with password **`123`**:
+
+| Student Name | Username | Password | Group | Level |
+|---|---|---|---|---|
+| **Farid Mammadov** | `farid` | `123` | Elementary Group A | Elementary |
+| **Leyla Huseynova** | `leyla` | `123` | Elementary Group A | Elementary |
+| **Rashad Aliyev** | `rashad` | `123` | Elementary Group A | Elementary |
+| **Aysel Karimova** | `aysel` | `123` | Beginner Morning | Beginner |
+| **Elvin Guliyev** | `elvin` | `123` | Intermediate Fast-Track | Intermediate |
+| **Nigar Babayeva** | `nigar` | `123` | IELTS Champions | IELTS Standard |
+
+---
+
+## 💡 How to Use the New Teacher Roster & Groups
+
+1. **Log in as Teacher** using password `Aliyev`.
+2. Go to the **"Students & Groups"** tab:
+   - Click **"Create Group"** to add a new group (e.g. *"Evening Elementary B"*, Level: *Elementary*).
+   - Click **"Add Student"** to add a new student with their name, username (e.g. `anvar`), password (e.g. `12345`), and assign them to the group.
+   - Click **"📋 Copy Credentials"** to quickly send login details to students.
+   - When the class finishes a level, click **"🎓 Graduate / Change Level"** on their group card to advance the entire group to the next level in one click!
+3. **For Students**:
+   - They open the link on their phone or PC, tap **Student**, enter their username and password, and instantly see their assignments!
