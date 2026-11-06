@@ -227,81 +227,107 @@ class App {
 
   // Student Direct Login Modal (Pre-Created Accounts)
   // Students simply log in with their pre-assigned username and password
-  async showStudentLoginModal(prefilledUsername = '') {
-    const modalId = 'student-login-modal';
-    let modal = document.getElementById(modalId);
-    if (modal) modal.remove();
+async showStudentLoginModal(prefilledUsername = '') {
+  const modalId = 'student-login-modal';
+  let modal = document.getElementById(modalId);
+  if (modal) modal.remove();
 
-    const allUsers = await window.appDB.getAll('users');
-    const allGroups = await window.appDB.getAll('groups');
-    const students = allUsers.filter(u => u.role === 'student');
+  const allUsers = await window.appDB.getAll('users');
+  const students = allUsers.filter(u => u.role === 'student');
 
-    const html = `
-      <div id="${modalId}" class="modal-overlay">
-        <div class="modal-content modal-md">
-          <div class="modal-header">
-            <h3>🧑‍🎓 ${window.i18n.get('studentLogin')}</h3>
-            <button class="modal-close-btn">&times;</button>
-          </div>
-          <form id="student-login-form" class="modal-body">
-            <p class="text-sm text-gray mb-3">
-              ${window.i18n.get('studentLoginDesc') || 'Please enter the username and password provided by your teacher.'}
-            </p>
-
-            <div class="form-group">
-              <label>${window.i18n.get('usernameLabel')} *</label>
-              <input type="text" id="student-username-input" class="form-control" 
-                     placeholder="e.g. farid, leyla, or username" 
-                     value="${prefilledUsername}" 
-                     autocomplete="username" required autofocus/>
-            </div>
-
-            <div class="form-group">
-              <label>${window.i18n.get('enterPassword')} *</label>
-              <input type="password" id="student-pass-input" class="form-control" 
-                     placeholder="••••••••" 
-                     autocomplete="current-password" required/>
-            </div>
-
-            <div id="student-login-error" class="error-msg hidden" style="color:var(--primary-red); font-size:0.85rem; margin-top:0.5rem; font-weight:600;"></div>
-
-            <!-- Quick tap student list for convenience -->
-            ${students.length > 0 ? `
-              <div class="quick-student-chips-section mt-4 pt-3" style="border-top:1px dashed var(--border-color);">
-                <label class="text-xs font-bold block mb-2" style="color:var(--text-muted);">
-                  👇 Or tap your name from your group:
-                </label>
-                <div class="quick-student-chips-list" style="display:flex; flex-wrap:wrap; gap:0.4rem; max-height:130px; overflow-y:auto; padding:2px;">
-                  ${students.map(s => {
-                    const grp = allGroups.find(g => g.id === s.groupId);
-                    const grpName = grp ? grp.name : s.level;
-                    return `
-                      <button type="button" class="btn btn-sm btn-secondary chip-student-pick-btn" 
-                              data-username="${s.username || s.firstName?.toLowerCase()}"
-                              style="font-size:0.78rem; padding:3px 8px; border-radius:12px;">
-                        <span>🧑‍🎓</span> <strong>${s.firstName} ${s.lastName}</strong> (${grpName})
-                      </button>
-                    `;
-                  }).join('')}
-                </div>
-              </div>
-            ` : ''}
-
-            <div class="modal-footer mt-4">
-              <button type="button" class="btn btn-secondary modal-close-btn">${window.i18n.get('cancel')}</button>
-              <button type="submit" class="btn btn-primary btn-ready-primary">
-                ${window.i18n.get('loginBtn')} 🚀
-              </button>
-            </div>
-          </form>
+  const html = `
+    <div id="${modalId}" class="modal-overlay">
+      <div class="modal-content modal-md">
+        <div class="modal-header">
+          <h3>🧑‍🎓 ${window.i18n.get('studentLogin') || 'Student Login'}</h3>
+          <button class="modal-close-btn">×</button>
         </div>
+        <form id="student-login-form" class="modal-body">
+          <p class="text-sm text-gray mb-3">
+            ${window.i18n.get('studentLoginDesc') || 'Please enter the username and password provided by your teacher.'}
+          </p>
+
+          <div class="form-group">
+            <label>${window.i18n.get('usernameLabel') || 'Username'} *</label>
+            <input type="text" id="student-username-input" class="form-control" placeholder="e.g. aliyev" value="${prefilledUsername}" autocomplete="username" required autofocus/>
+          </div>
+
+          <div class="form-group">
+            <label>Student Password *</label>
+            <input type="password" id="student-pass-input" class="form-control" placeholder="••••••••" autocomplete="current-password" required/>
+          </div>
+
+          <div id="student-login-error" class="error-msg" style="display:none; color:var(--primary-red); font-size:0.85rem; margin-top:0.5rem; font-weight:600;">
+            Incorrect username or password. Please ask your teacher.
+          </div>
+
+          ${students.length > 0 ? `
+            <div style="margin-top:1rem; border-top:1px dashed var(--border-color); padding-top:0.75rem;">
+              <p class="text-xs text-gray mb-2">👇 Or tap your name from your group:</p>
+              <div style="display:flex; flex-wrap:wrap; gap:0.35rem; max-height:120px; overflow-y:auto;">
+                ${students.map(s => `
+                  <button type="button" class="btn btn-sm btn-outline-secondary quick-chip-btn" data-username="${this.escape(s.username)}">
+                    👤 ${this.escape(s.firstName)} ${this.escape(s.lastName)}
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="modal-footer mt-4">
+            <button type="button" class="btn btn-secondary modal-close-btn">${window.i18n.get('cancel') || 'Cancel'}</button>
+            <button type="submit" class="btn btn-primary">Log In 🚀</button>
+          </div>
+        </form>
       </div>
-    `;
+    </div>
+  `;
 
-    document.body.insertAdjacentHTML('beforeend', html);
-    modal = document.getElementById(modalId);
+  document.body.insertAdjacentHTML('beforeend', html);
+  modal = document.getElementById(modalId);
 
-    modal.querySelectorAll('.modal-close-btn').forEach(b => b.addEventListener('click', () => modal.remove()));
+  // Quick chip auto-fill helper
+  modal.querySelectorAll('.quick-chip-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      modal.querySelector('#student-username-input').value = btn.getAttribute('data-username');
+      modal.querySelector('#student-pass-input').focus();
+    });
+  });
+
+  modal.querySelectorAll('.modal-close-btn').forEach(b => b.addEventListener('click', () => modal.remove()));
+
+  // Handle form submission and validate against window.appDB
+  modal.querySelector('#student-login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const enteredUsername = modal.querySelector('#student-username-input').value.trim().toLowerCase();
+    const enteredPassword = modal.querySelector('#student-pass-input').value.trim();
+    const errorEl = modal.querySelector('#student-login-error');
+
+    try {
+      const users = await window.appDB.getAll('users');
+      const student = users.find(u => 
+        u.role === 'student' && 
+        u.username.toLowerCase() === enteredUsername
+      );
+
+      const expectedPassword = student?.password || '12345';
+
+      if (student && enteredPassword === expectedPassword) {
+        if (window.authManager) {
+          window.authManager.currentUser = student;
+          sessionStorage.setItem('lh_user', JSON.stringify(student));
+        }
+        modal.remove();
+        window.location.reload();
+      } else {
+        if (errorEl) errorEl.style.display = 'block';
+      }
+    } catch (err) {
+      console.error('Student login error:', err);
+      if (errorEl) errorEl.style.display = 'block';
+    }
+  });
+}
 
     // Tap on student chip
     modal.querySelectorAll('.chip-student-pick-btn').forEach(chip => {
